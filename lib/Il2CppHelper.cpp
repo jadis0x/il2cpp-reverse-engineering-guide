@@ -109,6 +109,28 @@ Il2CppObject* Il2CppHelper::GetTypeFromClass(const Il2CppImage* _image, const ch
 	return nullptr;
 }
 
+void Il2CppHelper::GetFieldsInformation(Il2CppClass* klass)
+{
+	void* iter = nullptr;
+	FieldInfo* field = nullptr;
+
+	// Iterate through the fields of the class
+	while ((field = il2cpp_class_get_fields(klass, &iter)) != nullptr)
+	{
+		// Get the name of the field
+		const char* fieldName = il2cpp_field_get_name(field);
+
+		// Get the type of the field
+		const Il2CppType* fieldType = il2cpp_field_get_type(field);
+		char* fieldTypeStr = il2cpp_type_get_name(fieldType);
+
+		// Print the information about the field
+		std::cout << "Field Name: " << fieldName << std::endl;
+		std::cout << "Type: " << fieldTypeStr << std::endl;
+		std::cout << "-----------\n";
+	}
+}
+
 void Il2CppHelper::GetClassesAndNamesFromAssembly(const Il2CppImage* _image)
 {
 	if (_image) {
