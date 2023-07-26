@@ -2,7 +2,7 @@ Hello, as I no longer have time for reverse engineering, I have decided to share
 
 > INFO: I have created my own helper class, which you can access from the "lib" folder. I will prepare the examples based on the functions I have created.
  
-## Getting the type from a class (Il2CppObject* to Type*)
+### Getting the type from a class (Il2CppObject* to Type*)
 
 ```cpp
 Il2CppObject* Il2CppHelper::GetTypeFromClass(const Il2CppImage* _image, const char* _namespaze, const char* _name)
@@ -60,7 +60,7 @@ Output:
 ![Gameobjects](img/2.png)
 
 
-## Getting class names and types from a specific assembly
+### Getting class names and types from a specific assembly
 
 
 ```cpp
@@ -117,7 +117,7 @@ Outputs:
 ![Gameobjects](img/4.png)
 
 
-## Getting information about any method
+### Getting information about any method
 
 
 ```cpp
@@ -179,7 +179,7 @@ Output:
 ![Gameobjects](img/5.png)
 
 
-## Get the assemblies
+### Get the assemblies
 
 ```cpp
 // Get the active domain
@@ -207,7 +207,7 @@ Output:
 
 ![Gameobjects](img/1.png)
 
-## Call Any Function
+### Call Any Function
 
 ```cpp
 if (GetAsyncKeyState(VK_F1) & 0x8000) {
