@@ -5,6 +5,7 @@ IL2CppInspector built with v29 support [DOWNLOAD](https://github.com/ElCapor/Il2
 > INFO: I have created my own helper class, which you can access from the "lib" folder. I will prepare the examples based on the functions I have created.
  
 ### Getting the type from a class (Il2CppObject* to Type*)
+* To obtain the type information here, we will use the `GetTypeFromClass` function inside my Il2cppHelper class.
 
 ```cpp
 Il2CppObject* Il2CppHelper::GetTypeFromClass(const Il2CppImage* _image, const char* _namespaze, const char* _name)
@@ -26,9 +27,6 @@ Il2CppObject* Il2CppHelper::GetTypeFromClass(const Il2CppImage* _image, const ch
 	return nullptr;
 }
 ```
-
-
-
 ```cpp
 const Il2CppImage* _CoreModule = _Il2CppHelper->GET_IL2CPP_IMAGE("UnityEngine.CoreModule.dll");
 
@@ -64,6 +62,7 @@ Output:
 
 ### Getting class names and types from a specific assembly
 
+* It prints the list of namespace and class names in the specified image.
 
 ```cpp
 void Il2CppHelper::GetClassesAndNamesFromAssembly(const Il2CppImage* _image)
@@ -121,6 +120,7 @@ Outputs:
 
 ### Getting information about any method
 
+* It allows you to print the name, return type, and parameter information of the target method.
 
 ```cpp
 void Il2CppHelper::GetMethodInfo(const Il2CppImage* _image, const char* _funcName, int argLength, const char* _class_name, const char* _class_namespace)
@@ -183,33 +183,35 @@ Output:
 
 ### Get the assemblies
 
+* This code retrieves the active domain (Il2CppDomain) and then obtains a list of all assemblies within that domain using the il2cpp_domain_get_assemblies function. It retrieves the assembly name using the il2cpp_image_get_name function and prints the names of these assemblies to the console.
+
 ```cpp
 // Get the active domain
-			const Il2CppDomain* domain = il2cpp_domain_get();
+const Il2CppDomain* domain = il2cpp_domain_get();
 
-			// Define variables to hold the assembly list
-			const Il2CppAssembly** assemblies;
-			size_t size;
+// Define variables to hold the assembly list
+const Il2CppAssembly** assemblies;
+size_t size;
 
-			// Use the il2cpp_domain_get_assemblies function to retrieve all assemblies
-			assemblies = il2cpp_domain_get_assemblies(domain, &size);
+// Use the il2cpp_domain_get_assemblies function to retrieve all assemblies
+assemblies = il2cpp_domain_get_assemblies(domain, &size);
 
-			for (size_t i = 0; i < size; ++i) {
-				const Il2CppAssembly* assembly = assemblies[i];
+for (size_t i = 0; i < size; ++i) {
+	const Il2CppAssembly* assembly = assemblies[i];
 
-				if (assembly) {
-					// Get the assembly name using il2cpp_image_get_name function
-					const char* assemblyName = il2cpp_image_get_name(assembly->image);
-					std::cout << assemblyName << "\n";
-				}
-			}
+	if (assembly) {
+		// Get the assembly name using il2cpp_image_get_name function
+		const char* assemblyName = il2cpp_image_get_name(assembly->image);
+		std::cout << assemblyName << "\n";
+	}
+}
 ```
 
 Output:
 
 ![Gameobjects](img/1.png)
 
-### Call Any Function
+### Calling a function with "il2cpp_runtime_invoke"
 
 ```cpp
 if (GetAsyncKeyState(VK_F1) & 0x8000) {
@@ -247,6 +249,7 @@ if (GetAsyncKeyState(VK_F2) & 0x8000) {
 	}
 }
 ```
+
 Result:
 
 ![Gameobjects](img/6.png)
