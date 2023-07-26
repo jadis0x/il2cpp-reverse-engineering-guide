@@ -207,4 +207,46 @@ Output:
 
 ![Gameobjects](img/1.png)
 
+## Call Any Function
+
+```cpp
+if (GetAsyncKeyState(VK_F1) & 0x8000) {
+	const Il2CppImage* _AssemblyCSharp = _Il2CppHelper->GET_IL2CPP_IMAGE("Assembly-CSharp.dll");
+	_Il2CppHelper->GetMethodInfo(_AssemblyCSharp, "SetRank", 1, "NolanRankController", "");
+}
+
+if (GetAsyncKeyState(VK_F2) & 0x8000) {
+	const Il2CppImage* _csharp = _Il2CppHelper->GET_IL2CPP_IMAGE("Assembly-CSharp.dll");
+	if (_csharp == nullptr) return;
+
+	Il2CppObject* nolanObj = _Il2CppHelper->GetTypeFromClass(_csharp, "", "NolanRankController");
+
+	Type* TNolan = reinterpret_cast<Type*>(nolanObj);
+	
+	auto isTypeValid = Object_1_FindObjectOfType(TNolan, nullptr);
+
+	if(isTypeValid){
+	
+		NolanBehaviour* _nb_ = reinterpret_cast<NolanBehaviour*>(isTypeValid);
+
+		if (_nb_) {
+			Il2CppClass* _nbClass = il2cpp_class_from_name(_csharp, "", "NolanRankController");
+			if (_nbClass == nullptr) return;
+
+			const MethodInfo* methodInfo = il2cpp_class_get_method_from_name(_nbClass, "SetRank", 1);
+
+			int newRankvalue = 666;
+
+			void* params[] = { &newRankvalue };
+
+			std::cout << "call function..\n";
+			il2cpp_runtime_invoke(methodInfo, _nb_, params, nullptr);
+		}
+	}
+}
+```
+Result:
+
+![Gameobjects](img/6.png)
+
 I will continue to contribute as much as I can. For now, bye!
