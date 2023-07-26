@@ -30,29 +30,29 @@ Il2CppObject* Il2CppHelper::GetTypeFromClass(const Il2CppImage* _image, const ch
 ```cpp
 const Il2CppImage* _CoreModule = _Il2CppHelper->GET_IL2CPP_IMAGE("UnityEngine.CoreModule.dll");
 
-			if (_CoreModule) {
-				Il2CppObject* _object = _Il2CppHelper->GetTypeFromClass(_CoreModule, "UnityEngine", "GameObject");
+if (_CoreModule) {
 
-				if (_object) {
-					Type* gameobjectType = reinterpret_cast<Type*>(_object);
+Il2CppObject* _object = _Il2CppHelper->GetTypeFromClass(_CoreModule, "UnityEngine", "GameObject");
 
-					if (gameobjectType) {
-						Object_1__Array* getAllGameObjects = Object_1_FindObjectsOfType(gameobjectType, nullptr);
+	if (_object) {
+		Type* gameobjectType = reinterpret_cast<Type*>(_object);
 
-						std::cout << "Gameobject count: " << getAllGameObjects->max_length << "\n";
-						if (getAllGameObjects) {
-							for (int i = 0; i < getAllGameObjects->max_length; i++) {
-								Object_1* currentGameObject = getAllGameObjects->vector[i];
+		if (gameobjectType) {
+			Object_1__Array* getAllGameObjects = Object_1_FindObjectsOfType(gameobjectType, nullptr);
 
-								if (GameObject_get_activeInHierarchy(reinterpret_cast<GameObject*>(currentGameObject), nullptr)) {
-									std::cout << "GameObject Name: " << il2cppi_to_string(Object_1_GetName(currentGameObject, nullptr)) << "\n";
-								}
-								
-							}
-						}
-					}
+			std::cout << "Gameobject count: " << getAllGameObjects->max_length << "\n";
+			if (getAllGameObjects) {
+				for (int i = 0; i < getAllGameObjects->max_length; i++) {
+					Object_1* currentGameObject = getAllGameObjects->vector[i];
+
+					if (GameObject_get_activeInHierarchy(reinterpret_cast<GameObject*>(currentGameObject), nullptr)) {
+						std::cout << "GameObject Name: " << il2cppi_to_string(Object_1_GetName(currentGameObject, nullptr)) << "\n";
+					}			
 				}
 			}
+		}
+	}
+}
 ```
 
 Output:
