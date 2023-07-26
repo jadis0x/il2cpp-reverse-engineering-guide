@@ -1,9 +1,22 @@
 Hello, as I no longer have time for reverse engineering, I have decided to share some useful examples regarding the usage of Il2cppInspector C++ scaffold. In this guide, I will provide examples of how to interact with defined Il2cpp API functions.
 
+## This guide includes examples related to the following questions:
+
+- How to get the type from a class,
+- How to retrieve class namespaces and names from an image,
+- How to get the return type and names of any method,
+- How to invoke functions,
+- How to fetch fields from a class.
+
 IL2CppInspector built with v29 support [DOWNLOAD](https://github.com/ElCapor/Il2CppInspector/releases/tag/2021.2).
 
 > INFO: I have created my own helper class, which you can access from the "lib" folder. I will prepare the examples based on the functions I have created.
- 
+
+## Contact
+Discord: jadis0x 
+
+## Examples
+
 ### Getting the type from a class (Il2CppObject* to Type*)
 * To obtain the type information here, we will use the `GetTypeFromClass` function inside my Il2cppHelper class.
 
