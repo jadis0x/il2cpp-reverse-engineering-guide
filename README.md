@@ -254,4 +254,47 @@ Result:
 
 ![Gameobjects](img/6.png)
 
+### Getting Information about Class Fields (FieldInfo)
+
+* It allows us to get information about the fields of a class
+
+```cpp
+void Il2CppHelper::GetFieldsInformation(Il2CppClass* klass)
+{
+	void* iter = nullptr;
+	FieldInfo* field = nullptr;
+
+	// Iterate through the fields of the class
+	while ((field = il2cpp_class_get_fields(klass, &iter)) != nullptr)
+	{
+		// Get the name of the field
+		const char* fieldName = il2cpp_field_get_name(field);
+
+		// Get the type of the field
+		const Il2CppType* fieldType = il2cpp_field_get_type(field);
+		char* fieldTypeStr = il2cpp_type_get_name(fieldType);
+
+		// Print the information about the field
+		std::cout << "Field Name: " << fieldName << std::endl;
+		std::cout << "Type: " << fieldTypeStr << std::endl;
+		std::cout << "-----------\n";
+	}
+}
+```
+
+
+```cpp
+const Il2CppImage* _assemblyCSHARP = _Il2CppHelper->GET_IL2CPP_IMAGE("Assembly-CSharp.dll");
+			
+if (_assemblyCSHARP) {
+	Il2CppClass* _nolanBehaviourClass = il2cpp_class_from_name(_assemblyCSHARP, "", "NolanBehaviour");
+
+	_Il2CppHelper->GetFieldsInformation(_nolanBehaviourClass);
+}
+```
+
+Output:
+
+![Gameobjects](img/7.png)
+
 I will continue to contribute as much as I can. For now, bye!
