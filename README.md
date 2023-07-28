@@ -13,7 +13,7 @@ IL2CppInspector built with v29 support [DOWNLOAD](https://github.com/ElCapor/Il2
 > INFO: I have created my own helper class, which you can access from the "lib" folder. I will prepare the examples based on the functions I have created.
 
 ## Contact
-Discord: jadis0x 
+Discord: Jadis0x 
 
 ## Examples
 
