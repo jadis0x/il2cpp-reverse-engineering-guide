@@ -157,6 +157,28 @@ void Il2CppHelper::GetClassesAndNamesFromAssembly(const Il2CppImage* _image)
 	}
 }
 
+void Il2CppHelper::PrintMethods(Il2CppClass* klass) {
+	const MethodInfo* methodIter = nullptr;
+	void* iter = nullptr;
+
+	// Retrieve all methods of the class
+	while ((methodIter = il2cpp_class_get_methods(klass, &iter)) != nullptr) {
+		// Get the name of the method
+		const char* methodName = il2cpp_method_get_name(methodIter);
+
+		// Get the return type of the method
+		const Il2CppType* methodReturnType = il2cpp_method_get_return_type(methodIter);
+		char* returnTypeName = il2cpp_type_get_name(methodReturnType);
+
+		// Print the method name and its return type
+		std::cout << "Method Name: " << methodName;
+		std::cout << " (" << returnTypeName << ")\n------------------------------------\n";
+
+		// Perform necessary memory operations
+		il2cpp_free(returnTypeName);
+	}
+}
+
 void Il2CppHelper::PrintAssemblyMap()
 {
 	if (!assemblyMap.empty()) {
