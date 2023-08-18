@@ -267,6 +267,53 @@ Result:
 
 ![Gameobjects](img/6.png)
 
+
+### Getting a List of All Functions in the Target Class
+
+* This function, serves the purpose of obtaining and displaying a list of all methods within a given class (specified by the klass parameter). It iterates through each method in the class using a loop, retrieving information such as the method name and its return type. Subsequently, it prints out the method name along with its return type, providing a clear representation of the methods contained within the class
+
+```cpp
+void Il2CppHelper::PrintMethods(Il2CppClass* klass) {
+	const MethodInfo* methodIter = nullptr;
+	void* iter = nullptr;
+
+	// Retrieve all methods of the class
+	while ((methodIter = il2cpp_class_get_methods(klass, &iter)) != nullptr) {
+		// Get the name of the method
+		const char* methodName = il2cpp_method_get_name(methodIter);
+
+		// Get the return type of the method
+		const Il2CppType* methodReturnType = il2cpp_method_get_return_type(methodIter);
+		char* returnTypeName = il2cpp_type_get_name(methodReturnType);
+
+		// Print the method name and its return type
+		std::cout << "Method Name: " << methodName;
+		std::cout << " (" << returnTypeName << ")\n------------------------------------\n";
+
+		// Perform necessary memory operations
+		il2cpp_free(returnTypeName);
+	}
+}
+```
+
+## Example:
+
+```cpp
+const Il2CppImage* _timage = _Il2CppHelper->Image("Assembly-CSharp.dll");
+
+if (_timage) {
+	Il2CppClass* nolanRankControllerClass = il2cpp_class_from_name(_timage, "", "NolanRankController");
+
+	if (nolanRankControllerClass != nullptr) {
+		_Il2CppHelper->PrintMethods(nolanRankControllerClass);
+	}
+}
+```
+
+## Result:
+
+![Methods](img/8.png)
+
 ### Getting Information about Class Fields (FieldInfo)
 
 * It allows us to get information about the fields of a class
