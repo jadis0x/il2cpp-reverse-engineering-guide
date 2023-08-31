@@ -2,20 +2,22 @@
 
 <p>Hello! as I no longer have time for reverse engineering, I have decided to share some useful examples regarding the usage of Il2cppInspector C++ scaffold. In this guide, I will provide examples of how to interact with defined Il2cpp API functions.</p>
 
-## This guide includes examples related to the following questions:
-
-- How to get the type from a class,
-- How to retrieve class namespaces and names from an image,
-- How to get the return type and names of any method,
-- How to invoke functions,
-- How to fetch fields from a class.
-
 IL2CppInspector built with v29 support [DOWNLOAD](https://github.com/ElCapor/Il2CppInspector/releases/tag/2021.2).
 
 > INFO: I have created my own helper class, which you can access from the "lib" folder. I will prepare the examples based on the functions I have created.
 
+## This guide includes examples related to the following questions:
+
+- How to get the type from a class
+- How to get class namespaces and names from an image
+- How to get the return type and names of any method
+- How to invoke functions
+- How to fetch fields from a class
+
 ## Contact
-Discord: Jadis0x 
+If you have any questions, feel free to reach out to me. </br>
+Discord: Jadis0x </br>
+Steam: Jadis0x
 
 ## Examples
 
@@ -71,9 +73,16 @@ Il2CppObject* _object = _Il2CppHelper->GetTypeFromClass(_CoreModule, "UnityEngin
 }
 ```
 
-Output:
+In this example, we are passing the type of the object to be found (GameObject) as a parameter to the "Object_1_FindObjectsOfType" function. This actually allows us to achieve the following:
 
-![Gameobjects](img/2.png)
+```cpp
+GameObject[] allGameObjects = FindObjectsOfType<GameObject>();
+```
+
+> This function is quite slow. Using this function every frame is not recommended.
+
+<p>Output: </p>
+<img src="img/2.png" alt="Gameobjects" width="650">
 
 
 ### Getting class names and types from a specific assembly
@@ -128,10 +137,9 @@ if (_assemblyCSHARP) {
 }
 ```
 
-Outputs:
-
-![Gameobjects](img/3.png)
-![Gameobjects](img/4.png)
+<p>Outputs: </p>
+<img src="img/3.png" width="650">
+<img src="img/4.png" width="650">
 
 
 ### Getting information about any method
@@ -192,10 +200,8 @@ const Il2CppImage* _AssemblyCSharp = _Il2CppHelper->GET_IL2CPP_IMAGE("Assembly-C
 _Il2CppHelper->GetMethodInfo(_AssemblyCSharp, "SetFOV", 1, "NolanBehaviour", "");
 ```
 
-Output:
-
-![Gameobjects](img/5.png)
-
+<p>Output: </p>
+<img src="img/5.png" width="650">
 
 ### Get the assemblies
 
@@ -223,9 +229,8 @@ for (size_t i = 0; i < size; ++i) {
 }
 ```
 
-Output:
-
-![Gameobjects](img/1.png)
+<p>Output: </p>
+<img src="img/1.png" width="650">
 
 ### Calling a function with "il2cpp_runtime_invoke"
 
@@ -266,9 +271,8 @@ if (GetAsyncKeyState(VK_F2) & 0x8000) {
 }
 ```
 
-Result:
-
-![Gameobjects](img/6.png)
+<p>Output: </p>
+<img src="img/6.png" width="650">
 
 
 ### Getting a List of All Functions in the Target Class
@@ -313,9 +317,8 @@ if (_timage) {
 }
 ```
 
-## Result:
-
-![Methods](img/8.png)
+<p>Output: </p>
+<img src="img/8.png" width="650">
 
 ### Getting Information about Class Fields (FieldInfo)
 
@@ -356,8 +359,7 @@ if (_assemblyCSHARP) {
 }
 ```
 
-Output:
-
-![Gameobjects](img/7.png)
+<p>Output: </p>
+<img src="img/7.png" width="650">
 
 I will continue to contribute as much as I can. For now, bye!
