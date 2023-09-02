@@ -22,7 +22,7 @@ public:
 	void GetClassesAndNamesFromAssembly(const Il2CppImage* _image);
 
 	void GetFieldsInformation(Il2CppClass* klass);
-	void PrintMethods(Il2CppClass* klass)
+	void PrintMethods(Il2CppClass* klass);
 	void PrintAssemblyMap();
 private:
 	 std::map<const char*, const Il2CppAssembly*> assemblyMap;
