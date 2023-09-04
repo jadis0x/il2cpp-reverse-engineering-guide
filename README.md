@@ -311,7 +311,7 @@ void Il2CppHelper::PrintMethods(Il2CppClass* klass) {
 ## Example:
 
 ```cpp
-const Il2CppImage* _timage = _Il2CppHelper->Image("Assembly-CSharp.dll");
+const Il2CppImage* _timage = _Il2CppHelper->GET_IL2CPP_IMAGE("Assembly-CSharp.dll");
 
 if (_timage) {
 	Il2CppClass* nolanRankControllerClass = il2cpp_class_from_name(_timage, "", "NolanRankController");
