@@ -1,5 +1,5 @@
 #include "pch-il2cpp.h"
-
+#include "il2cpp-appdata.h"
 #include "Il2CppHelper.h"
 
 Il2CppHelper::Il2CppHelper()
@@ -184,6 +184,44 @@ void Il2CppHelper::PrintAssemblyMap()
 	if (!assemblyMap.empty()) {
 		for (const auto& entry : assemblyMap) {
 			std::cout << entry.first << ": " << entry.second << std::endl;
+		}
+	}
+}
+void Il2CppHelper::SetFieldValue(const std::string& klass_nameassemblydll, const char* namespake, const char* classvalue, const char* name_space, const char* value_class, const char* fieldoffset, void *value)
+{
+	Il2CppHelper* _Il2CppHelper = new Il2CppHelper();
+	// Get the Il2CppImage for "Assembly-CSharp.dll"
+	const Il2CppImage* _AssemblyCSharp = _Il2CppHelper->GET_IL2CPP_IMAGE(klass_nameassemblydll);
+
+	// Get the object for the "Menu" class within the "Horror" namespace
+	Il2CppObject* _horrorMenuClassObject = _Il2CppHelper->GetTypeFromClass(_AssemblyCSharp, namespake, classvalue);
+
+	// Check if the object exists
+	if (_horrorMenuClassObject) {
+
+		// Find the object represented by _horrorMenuClassObject in the app
+		auto menuType = app::Object_1_FindObjectOfType_1(reinterpret_cast<app::Type*>(_horrorMenuClassObject), true, nullptr);
+
+		// Check if the object was found
+		if (menuType) {
+
+			// Get the Il2CppClass for the "Menu" class
+			Il2CppClass* menuClass = il2cpp_class_from_name(_AssemblyCSharp, name_space, value_class);
+			if (menuClass == nullptr) return;
+
+			// Get the FieldInfo for the "steamName" field
+			FieldInfo* steamNameField = il2cpp_class_get_field_from_name(menuClass, fieldoffset);
+
+			// Check if the field exists
+			if (steamNameField) {
+				std::cout << "field is exists!!\n";
+
+				// Set the field's value to the new value
+				il2cpp_field_set_value(_horrorMenuClassObject, steamNameField, value);
+			}
+			else {
+				std::cout << "field is not exists!\n";
+			}
 		}
 	}
 }
