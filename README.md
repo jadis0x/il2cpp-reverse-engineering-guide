@@ -311,7 +311,7 @@ void Il2CppHelper::PrintMethods(Il2CppClass* klass) {
 ## Example:
 
 ```cpp
-const Il2CppImage* _timage = _Il2CppHelper->Image("Assembly-CSharp.dll");
+const Il2CppImage* _timage = _Il2CppHelper->GET_IL2CPP_IMAGE("Assembly-CSharp.dll");
 
 if (_timage) {
 	Il2CppClass* nolanRankControllerClass = il2cpp_class_from_name(_timage, "", "NolanRankController");
@@ -366,5 +366,53 @@ if (_assemblyCSHARP) {
 
 <p>Output: </p>
 <img src="img/7.png" width="650">
+
+
+### Modifiying the Value of a Field
+
+```cpp
+if (GetAsyncKeyState(VK_F1) & 0x8000) {
+	// Get the Il2CppImage for "Assembly-CSharp.dll"
+	const Il2CppImage* _AssemblyCSharp = _Il2CppHelper->GET_IL2CPP_IMAGE("Assembly-CSharp.dll");
+
+	// Get the object for the "Menu" class within the "Horror" namespace
+	Il2CppObject* _horrorMenuClassObject = _Il2CppHelper->GetTypeFromClass(_AssemblyCSharp, "Horror", "Menu");
+
+	// Check if the object exists
+	if (_horrorMenuClassObject) {
+
+		// Find the object represented by _horrorMenuClassObject in the app
+		auto menuType = app::Object_1_FindObjectOfType_1(reinterpret_cast<Type*>(_horrorMenuClassObject), true, nullptr);
+
+		// Check if the object was found
+		if (menuType) {
+
+			// Get the Il2CppClass for the "Menu" class
+			Il2CppClass* menuClass = il2cpp_class_from_name(_AssemblyCSharp, "Horror", "Menu");
+			if (menuClass == nullptr) return;
+
+			// Get the FieldInfo for the "steamName" field
+			FieldInfo* steamNameField = il2cpp_class_get_field_from_name(menuClass, "steamName");
+
+			// Check if the field exists
+			if (steamNameField) {
+				std::cout << "field is exists!!\n";
+
+				// Define a new value for the field
+				const char* newSteamNameValue = "il2cpp-field";
+
+				// Create a new Il2CppString from the new value
+				Il2CppString* newSteamNameString = il2cpp_string_new(newSteamNameValue);
+
+				// Set the field's value to the new value
+				il2cpp_field_set_value(_horrorMenuClassObject, steamNameField, newSteamNameString);
+			}
+			else {
+				std::cout << "field is not exists!\n";
+			}
+		}
+	}
+}
+```
 
 I will continue to contribute as much as I can. For now, bye!
