@@ -24,7 +24,7 @@ Il2CppHelper::Il2CppHelper()
 }
 
 // example: UnityEngine.CoreModule.dll
-const Il2CppAssembly* Il2CppHelper::FIND_IL2CPP_ASSEMBLY(const char* _targetil2cppAssembly) 
+const Il2CppAssembly* Il2CppHelper::GetAssembly(const char* _targetil2cppAssembly) 
 {
 	for (const auto& entry : assemblyMap) {
 		if (strcmp(entry.first, _targetil2cppAssembly) == 0) {
@@ -34,7 +34,7 @@ const Il2CppAssembly* Il2CppHelper::FIND_IL2CPP_ASSEMBLY(const char* _targetil2c
 	return nullptr;
 }
 
-const Il2CppImage* Il2CppHelper::GET_IL2CPP_IMAGE(const char* _targetil2cppAssembly)
+const Il2CppImage* Il2CppHelper::GetImage(const char* _targetil2cppAssembly)
 {
 	for (const auto& entry : assemblyMap) {
 		if (strcmp(entry.first, _targetil2cppAssembly) == 0) {

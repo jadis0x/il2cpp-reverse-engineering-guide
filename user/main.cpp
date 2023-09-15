@@ -25,15 +25,18 @@ void Run()
 
 	il2cppi_new_console();
 
-	Il2CppHelper* _Il2CppHelper = new Il2CppHelper();
+	Il2CppHelper* _helper = new Il2CppHelper();
 
 	while (true) {
 		if (GetAsyncKeyState(VK_F1) & 0x8000) {
-			const Il2CppImage* _AssemblyCSharp = _Il2CppHelper->GET_IL2CPP_IMAGE("Assembly-CSharp.dll");
+			const Il2CppImage* _image = _helper->GetImage("Assembly-CSharp.dll");
 
-			_Il2CppHelper->GetMethodInfo(_AssemblyCSharp, "SetFOV", 1, "NolanBehaviour", "");
+			_helper->GetMethodInfo(_image, "SetFOV", 1, "NolanBehaviour", "");
+
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
+
+	delete _helper;
 }

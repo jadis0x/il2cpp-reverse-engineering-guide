@@ -51,11 +51,11 @@ Il2CppObject* Il2CppHelper::GetTypeFromClass(const Il2CppImage* _image, const ch
 ```
 
 ```cpp
-const Il2CppImage* _CoreModule = _Il2CppHelper->GET_IL2CPP_IMAGE("UnityEngine.CoreModule.dll");
+const Il2CppImage* _CoreModule = _helper->GetImage("UnityEngine.CoreModule.dll");
 
 if (_CoreModule) {
 
-Il2CppObject* _object = _Il2CppHelper->GetTypeFromClass(_CoreModule, "UnityEngine", "GameObject");
+Il2CppObject* _object = _helper->GetTypeFromClass(_CoreModule, "UnityEngine", "GameObject");
 
 	if (_object) {
 		Type* gameobjectType = reinterpret_cast<Type*>(_object);
@@ -125,20 +125,20 @@ void Il2CppHelper::GetClassesAndNamesFromAssembly(const Il2CppImage* _image)
 
 
 ```cpp
-const Il2CppImage* _BoltDll = _Il2CppHelper->GET_IL2CPP_IMAGE("bolt.dll");
+const Il2CppImage* _BoltDll = _helper->GetImage("bolt.dll");
 
 if (_BoltDll) {
-    _Il2CppHelper->GetClassesAndNamesFromAssembly(_BoltDll);
+    _helper->GetClassesAndNamesFromAssembly(_BoltDll);
 }
 ```
 
 or
 
 ```cpp
-const Il2CppImage* _assemblyCSHARP = _Il2CppHelper->GET_IL2CPP_IMAGE("Assembly-CSharp.dll");
+const Il2CppImage* _assemblyCSHARP = _helper->GetImage("Assembly-CSharp.dll");
 
 if (_assemblyCSHARP) {
-   _Il2CppHelper->GetClassesAndNamesFromAssembly(_assemblyCSHARP);
+   _helper->GetClassesAndNamesFromAssembly(_assemblyCSHARP);
 }
 ```
 
@@ -200,9 +200,9 @@ void Il2CppHelper::GetMethodInfo(const Il2CppImage* _image, const char* _funcNam
 
 
 ```cpp
-const Il2CppImage* _AssemblyCSharp = _Il2CppHelper->GET_IL2CPP_IMAGE("Assembly-CSharp.dll");
+const Il2CppImage* _AssemblyCSharp = _helper->GetImage("Assembly-CSharp.dll");
 			
-_Il2CppHelper->GetMethodInfo(_AssemblyCSharp, "SetFOV", 1, "NolanBehaviour", "");
+_helper->GetMethodInfo(_AssemblyCSharp, "SetFOV", 1, "NolanBehaviour", "");
 ```
 
 <p>Output: </p>
@@ -241,15 +241,15 @@ for (size_t i = 0; i < size; ++i) {
 
 ```cpp
 if (GetAsyncKeyState(VK_F1) & 0x8000) {
-	const Il2CppImage* _AssemblyCSharp = _Il2CppHelper->GET_IL2CPP_IMAGE("Assembly-CSharp.dll");
-	_Il2CppHelper->GetMethodInfo(_AssemblyCSharp, "SetRank", 1, "NolanRankController", "");
+	const Il2CppImage* _AssemblyCSharp = _helper->GetImage("Assembly-CSharp.dll");
+	_helper->GetMethodInfo(_AssemblyCSharp, "SetRank", 1, "NolanRankController", "");
 }
 
 if (GetAsyncKeyState(VK_F2) & 0x8000) {
-	const Il2CppImage* _csharp = _Il2CppHelper->GET_IL2CPP_IMAGE("Assembly-CSharp.dll");
+	const Il2CppImage* _csharp = _helper->GetImage("Assembly-CSharp.dll");
 	if (_csharp == nullptr) return;
 
-	Il2CppObject* nolanObj = _Il2CppHelper->GetTypeFromClass(_csharp, "", "NolanRankController");
+	Il2CppObject* nolanObj = _helper->GetTypeFromClass(_csharp, "", "NolanRankController");
 
 	Type* TNolan = reinterpret_cast<Type*>(nolanObj);
 	
@@ -311,13 +311,13 @@ void Il2CppHelper::PrintMethods(Il2CppClass* klass) {
 ## Example:
 
 ```cpp
-const Il2CppImage* _timage = _Il2CppHelper->GET_IL2CPP_IMAGE("Assembly-CSharp.dll");
+const Il2CppImage* _image = _helper->GetImage("Assembly-CSharp.dll");
 
-if (_timage) {
+if (_image) {
 	Il2CppClass* nolanRankControllerClass = il2cpp_class_from_name(_timage, "", "NolanRankController");
 
 	if (nolanRankControllerClass != nullptr) {
-		_Il2CppHelper->PrintMethods(nolanRankControllerClass);
+		_helper->PrintMethods(nolanRankControllerClass);
 	}
 }
 ```
@@ -355,12 +355,12 @@ void Il2CppHelper::GetFieldsInformation(Il2CppClass* klass)
 
 
 ```cpp
-const Il2CppImage* _assemblyCSHARP = _Il2CppHelper->GET_IL2CPP_IMAGE("Assembly-CSharp.dll");
+const Il2CppImage* _assemblyCSHARP = _helper->GetImage("Assembly-CSharp.dll");
 			
 if (_assemblyCSHARP) {
 	Il2CppClass* _nolanBehaviourClass = il2cpp_class_from_name(_assemblyCSHARP, "", "NolanBehaviour");
 
-	_Il2CppHelper->GetFieldsInformation(_nolanBehaviourClass);
+	_helper->GetFieldsInformation(_nolanBehaviourClass);
 }
 ```
 
@@ -373,10 +373,10 @@ if (_assemblyCSHARP) {
 ```cpp
 if (GetAsyncKeyState(VK_F1) & 0x8000) {
 	// Get the Il2CppImage for "Assembly-CSharp.dll"
-	const Il2CppImage* _AssemblyCSharp = _Il2CppHelper->GET_IL2CPP_IMAGE("Assembly-CSharp.dll");
+	const Il2CppImage* _AssemblyCSharp = _helper->GetImage("Assembly-CSharp.dll");
 
 	// Get the object for the "Menu" class within the "Horror" namespace
-	Il2CppObject* _horrorMenuClassObject = _Il2CppHelper->GetTypeFromClass(_AssemblyCSharp, "Horror", "Menu");
+	Il2CppObject* _horrorMenuClassObject = _helper->GetTypeFromClass(_AssemblyCSharp, "Horror", "Menu");
 
 	// Check if the object exists
 	if (_horrorMenuClassObject) {
