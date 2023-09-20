@@ -17,6 +17,9 @@ IL2CppInspector built with v29 support [DOWNLOAD](https://github.com/ElCapor/Il2
 - How to get the return type and names of any method
 - How to invoke functions
 - How to fetch fields from a class
+  
+## Video
+[![Video](https://img.youtube.com/vi/L7s2ttcNEh0/0.jpg)](https://www.youtube.com/watch?v=L7s2ttcNEh0)
 
 ## Contact
 If you have any questions, feel free to reach out to me. </br>
