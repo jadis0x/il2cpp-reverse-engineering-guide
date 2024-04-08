@@ -24,8 +24,8 @@ IL2CppInspector built with v29 support [DOWNLOAD](https://github.com/ElCapor/Il2
 ## Contact
 If you have any questions, feel free to reach out to me.</br>
 
-Discord: jadis0x </br>
-Steam:jadis0x
+Discord: Jadis0x </br>
+Steam: Jadis0x
 
 ## Examples
 
