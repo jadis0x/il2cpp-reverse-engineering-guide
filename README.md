@@ -28,7 +28,7 @@ Discord: Jadis0x </br>
 Steam: Jadis0x
 
 ## Examples
-
+You can find more detailed examples by taking a look at [HERE](https://github.com/jadis0x/DevourX) using the Il2cppInspector analysis tool I used to create the cheat.
 ### Getting the type from a class (Il2CppObject* to Type*)
 * To obtain the type information here, we will use the `GetTypeFromClass` function inside my Il2cppHelper class.
 
