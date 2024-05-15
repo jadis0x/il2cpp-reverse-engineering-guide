@@ -9,6 +9,10 @@
 <p>Hello! as I no longer have time for reverse engineering, I have decided to share some useful examples regarding the usage of Il2cppInspector C++ scaffold. In this guide, I will provide examples of how to interact with defined Il2cpp API functions.</p>
 
 IL2CppInspector built with v29 support [DOWNLOAD](https://github.com/ElCapor/Il2CppInspector/releases/tag/2021.2).
+<br>
+Il2CppInspectorRedux 2023.1 [DOWNLOAD](https://github.com/LukeFZ/Il2CppInspectorRedux).
+
+
 
 > INFO: I have created my own helper class, which you can access from the "lib" folder. I will prepare the examples based on the functions I have created.
 
