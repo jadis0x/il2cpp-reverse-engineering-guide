@@ -5,23 +5,17 @@
 
 <h3 align="center">Il2cppInspector: C++ Scaffold Guide</h3>
 
-<p>Hello! as I no longer have time for reverse engineering, I have decided to share some useful examples regarding the usage of Il2cppInspector C++ scaffold. In this guide, I will provide examples of how to interact with defined Il2cpp API functions.</p>
+<p>Hello! I have decided to share some useful examples regarding the usage of Il2cppInspector C++ scaffold. In this guide, I will provide examples of how to interact with defined Il2cpp API functions.</p>
 
-IL2CppInspector built with v29 support [DOWNLOAD](https://github.com/ElCapor/Il2CppInspector/releases/tag/2021.2).
-<br>
-Il2CppInspectorRedux 2023.1 [DOWNLOAD](https://github.com/LukeFZ/Il2CppInspectorRedux).
+### Installation
+You can get the latest version of Il2CppInspector 2023.1 [here](https://github.com/jadis0x/il2cpp-reverse-engineering-guide/releases/tag/2023.1).
 
+### Requirements
+Having knowledge of C++ and C# is essential. You should also be familiar with the basics of the Unity game engine.
 
+> [!NOTE]  
+> I wrote my own helper class. You can access it under the lib folder. Throughout the guide, I will be using the helper functions I created.
 
-> INFO: I have created my own helper class, which you can access from the "lib" folder. I will prepare the examples based on the functions I have created.
-
-## This guide includes examples related to the following questions:
-
-- How to get the type from a class
-- How to get class namespaces and names from an image
-- How to get the return type and names of any method
-- How to invoke functions
-- How to fetch fields from a class
   
 ## Video
 [![Video](https://img.youtube.com/vi/L7s2ttcNEh0/0.jpg)](https://www.youtube.com/watch?v=L7s2ttcNEh0)
@@ -33,7 +27,8 @@ Discord: Jadis0x </br>
 Steam: Jadis0x
 
 ## Examples
-You can find more detailed examples by taking a look at [HERE](https://github.com/ALittlePatate/DevourClient) using the Il2cppInspector analysis tool I used to create the cheat.
+> [!TIP]
+> You can find more detailed examples by taking a look at [HERE](https://github.com/ALittlePatate/DevourClient) using the Il2cppInspector analysis tool I used to create the cheat.
 
 ### Getting the type from a class (Il2CppObject* to Type*)
 * To obtain the type information here, we will use the `GetTypeFromClass` function inside my Il2cppHelper class.
