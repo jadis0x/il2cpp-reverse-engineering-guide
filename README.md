@@ -30,59 +30,98 @@ Steam: Jadis0x
 > [!TIP]
 > You can find more detailed examples by taking a look at [HERE](https://github.com/ALittlePatate/DevourClient) using the Il2cppInspector analysis tool I used to create the cheat.
 
-### Getting the type from a class (Il2CppObject* to Type*)
-* To obtain the type information here, we will use the `GetTypeFromClass` function inside my Il2cppHelper class.
+## Contents
+
+<nav>
+  <ul>
+    <li><a href="#type_usage">Getting the type from a class (Il2CppObject* to Type*)</a></li>
+    <li><a href="#get_class_names_types">Getting class names and types from a specific assembly</a></li>
+    <li><a href="#get_info_method">Getting information about any method</a></li>
+    <li><a href="#get_assemblies">Get the assemblies</a></li>
+    <li><a href="#call_function">Calling a function with "il2cpp_runtime_invoke"</a></li>
+    <li><a href="#list_all_functions">Getting a List of All Functions in the Target Class</a></li>
+    <li><a href="#get_field_info">Getting Information about Class Fields (FieldInfo)</a></li>
+    <li><a href="#modify_field">Modifiying the Value of a Field</a></li>
+  </ul>
+</nav>
+
+<h2 id="type_usage">Getting the type from a class (Il2CppObject* to Type*)</h2>
+
+To obtain the type information here, we will use the GetTypeFromClass function inside my Il2cppHelper class.
 
 ```cpp
 Il2CppObject* Il2CppHelper::GetTypeFromClass(const Il2CppImage* _image, const char* _namespaze, const char* _name)
 {
-	Il2CppClass* _targetClass = il2cpp_class_from_name(_image, _namespaze, _name);
+    // Retrieve the class information using the image, namespace, and class name
+    Il2CppClass* _targetClass = il2cpp_class_from_name(_image, _namespaze, _name);
 
-	if (_targetClass) {
-		const Il2CppType* _targetType = il2cpp_class_get_type(_targetClass);
+    // If the class is found
+    if (_targetClass) {
+        // Get the type information from the class
+        const Il2CppType* _targetType = il2cpp_class_get_type(_targetClass);
 
-		if (_targetType) {
-			Il2CppObject* targetObject = il2cpp_type_get_object(_targetType);
+        // If the type information is found
+        if (_targetType) {
+            // Get the Il2CppObject from the type information
+            Il2CppObject* targetObject = il2cpp_type_get_object(_targetType);
 
-			if (targetObject) {
-				return targetObject;
-			}
-		}
-	}
+            // If the object is successfully retrieved, return it
+            if (targetObject) {
+                return targetObject;
+            }
+        }
+    }
 
-	return nullptr;
+    // If any step fails, return nullptr
+    return nullptr;
 }
 ```
+
+<span>First, load the CoreModule from Unity, which contains many fundamental classes such as GameObject.</span>
 
 ```cpp
 const Il2CppImage* _CoreModule = _helper->GetImage("UnityEngine.CoreModule.dll");
+```
 
+<span>If the module is successfully loaded, use the GetTypeFromClass function to get the type information for the GameObject class.</span>
+
+```cpp
 if (_CoreModule) {
+    // Get the type information for the GameObject class in the UnityEngine namespace
+    Il2CppObject* _object = _helper->GetTypeFromClass(_CoreModule, "UnityEngine", "GameObject");
 
-Il2CppObject* _object = _helper->GetTypeFromClass(_CoreModule, "UnityEngine", "GameObject");
+    // If the type information is successfully retrieved
+    if (_object) {
+        // Cast the Il2CppObject to Type
+        Type* gameobjectType = reinterpret_cast<Type*>(_object);
 
-	if (_object) {
-		Type* gameobjectType = reinterpret_cast<Type*>(_object);
+        // If the type casting is successful
+        if (gameobjectType) {
+            // Find all objects of the GameObject type
+            Object_1__Array* getAllGameObjects = Object_1_FindObjectsOfType(gameobjectType, nullptr);
 
-		if (gameobjectType) {
-			Object_1__Array* getAllGameObjects = Object_1_FindObjectsOfType(gameobjectType, nullptr);
+            // Print the count of GameObject instances
+            std::cout << "Gameobject count: " << getAllGameObjects->max_length << "\n";
 
-			std::cout << "Gameobject count: " << getAllGameObjects->max_length << "\n";
-			if (getAllGameObjects) {
-				for (int i = 0; i < getAllGameObjects->max_length; i++) {
-					Object_1* currentGameObject = getAllGameObjects->vector[i];
+            // If any GameObject instances are found
+            if (getAllGameObjects) {
+                // Iterate through each GameObject instance
+                for (int i = 0; i < getAllGameObjects->max_length; i++) {
+                    Object_1* currentGameObject = getAllGameObjects->vector[i];
 
-					if (GameObject_get_activeInHierarchy(reinterpret_cast<GameObject*>(currentGameObject), nullptr)) {
-						std::cout << "GameObject Name: " << il2cppi_to_string(Object_1_GetName(currentGameObject, nullptr)) << "\n";
-					}			
-				}
-			}
-		}
-	}
+                    // If the GameObject is active in the hierarchy
+                    if (GameObject_get_activeInHierarchy(reinterpret_cast<GameObject*>(currentGameObject), nullptr)) {
+                        // Print the name of the active GameObject
+                        std::cout << "GameObject Name: " << il2cppi_to_string(Object_1_GetName(currentGameObject, nullptr)) << "\n";
+                    }
+                }
+            }
+        }
+    }
 }
 ```
 
-In this example, we are passing the type of the object to be found (GameObject) as a parameter to the "Object_1_FindObjectsOfType" function. This actually allows us to achieve the following:
+<span>In this example, we are passing the type of the object to be found (GameObject) as a parameter to the Object_1_FindObjectsOfType function. This actually allows us to achieve the following:</span>
 
 ```cpp
 GameObject[] allGameObjects = FindObjectsOfType<GameObject>();
@@ -90,11 +129,64 @@ GameObject[] allGameObjects = FindObjectsOfType<GameObject>();
 
 > This function is quite slow. Using this function every frame is not recommended.
 
+<h2>Summary of the Steps and il2cpp API Functions Used</h2>
+
+<ol>
+  <li>Loading the Image:
+    <ul>
+      <li>Function: <code>GetImage</code></li>
+      <li>Description: Loads the <code>CoreModule</code> image from Unity, which contains fundamental classes like <code>GameObject</code>.</li>
+    </ul>
+  </li>
+  <li>Retrieving Class Information:
+    <ul>
+      <li>Function: <code>il2cpp_class_from_name</code></li>
+      <li>Description: Retrieves class information using the image, namespace, and class name.</li>
+    </ul>
+  </li>
+  <li>Getting Type Information from Class:
+    <ul>
+      <li>Function: <code>il2cpp_class_get_type</code></li>
+      <li>Description: Obtains the type information from the class.</li>
+    </ul>
+  </li>
+  <li>Getting Il2CppObject from Type:
+    <ul>
+      <li>Function: <code>il2cpp_type_get_object</code></li>
+      <li>Description: Converts type information into an <code>Il2CppObject</code>.</li>
+    </ul>
+  </li>
+  <li>Casting Il2CppObject to Type:
+    <ul>
+      <li>Operation: <code>reinterpret_cast&lt;Type*&gt;</code></li>
+      <li>Description: Casts the retrieved <code>Il2CppObject</code> to <code>Type</code>.</li>
+    </ul>
+  </li>
+  <li>Finding Objects of a Specific Type:
+    <ul>
+      <li>Function: <code>Object_1_FindObjectsOfType</code></li>
+      <li>Description: Finds all objects of the specified type (<code>GameObject</code> in this case).</li>
+    </ul>
+  </li>
+  <li>Checking if GameObject is Active:
+    <ul>
+      <li>Function: <code>GameObject_get_activeInHierarchy</code></li>
+      <li>Description: Checks if the <code>GameObject</code> is active in the hierarchy.</li>
+    </ul>
+  </li>
+  <li>Getting GameObject Name:
+    <ul>
+      <li>Function: <code>Object_1_GetName</code></li>
+      <li>Description: Retrieves the name of the <code>GameObject</code>.</li>
+    </ul>
+  </li>
+</ol>
+
 <p>Output: </p>
 <img src="img/2.png" alt="Gameobjects" width="650">
 
 
-### Getting class names and types from a specific assembly
+<h2 id="get_class_names_types">Getting class names and types from a specific assembly</h2>
 
 * It prints the list of namespace and class names in the specified image.
 
@@ -151,7 +243,7 @@ if (_assemblyCSHARP) {
 <img src="img/4.png" width="650">
 
 
-### Getting information about any method
+<h2 id="get_info_method">Getting information about any method </h2>
 
 * It allows you to print the name, return type, and parameter information of the target method.
 
@@ -212,7 +304,7 @@ _helper->GetMethodInfo(_AssemblyCSharp, "SetFOV", 1, "NolanBehaviour", "");
 <p>Output: </p>
 <img src="img/5.png" width="650">
 
-### Get the assemblies
+<h2 id="get_assemblies">Get the assemblies</h2>
 
 * This code retrieves the active domain (Il2CppDomain) and then obtains a list of all assemblies within that domain using the il2cpp_domain_get_assemblies function. It retrieves the assembly name using the il2cpp_image_get_name function and prints the names of these assemblies to the console.
 
@@ -241,7 +333,7 @@ for (size_t i = 0; i < size; ++i) {
 <p>Output: </p>
 <img src="img/1.png" width="650">
 
-### Calling a function with "il2cpp_runtime_invoke"
+<h2 id="call_function">Calling a function with "il2cpp_runtime_invoke"</h2> 
 
 ```cpp
 if (GetAsyncKeyState(VK_F1) & 0x8000) {
@@ -284,7 +376,7 @@ if (GetAsyncKeyState(VK_F2) & 0x8000) {
 <img src="img/6.png" width="650">
 
 
-### Getting a List of All Functions in the Target Class
+<h2 id="list_all_functions">Getting a List of All Functions in the Target Class</h2>
 
 * This function, serves the purpose of obtaining and displaying a list of all methods within a given class (specified by the klass parameter). It iterates through each method in the class using a loop, retrieving information such as the method name and its return type. Subsequently, it prints out the method name along with its return type, providing a clear representation of the methods contained within the class
 
@@ -329,7 +421,7 @@ if (_image) {
 <p>Output: </p>
 <img src="img/8.png" width="650">
 
-### Getting Information about Class Fields (FieldInfo)
+<h2 id="get_field_info">Getting Information about Class Fields (FieldInfo)</h2>
 
 * It allows us to get information about the fields of a class
 
@@ -372,7 +464,7 @@ if (_assemblyCSHARP) {
 <img src="img/7.png" width="650">
 
 
-### Modifiying the Value of a Field
+<h2 id="modify_field">Modifiying the Value of a Field</h2>
 
 ```cpp
 if (GetAsyncKeyState(VK_F1) & 0x8000) {
