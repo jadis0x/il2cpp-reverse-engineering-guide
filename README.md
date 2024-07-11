@@ -34,16 +34,90 @@ Steam: Jadis0x
 
 <nav>
   <ul>
+    <li><a href="#get_assemblies">Get the assemblies</a></li>
     <li><a href="#type_usage">Getting the type from a class (Il2CppObject* to Type*)</a></li>
     <li><a href="#get_class_names_types">Getting class names and types from a specific assembly</a></li>
     <li><a href="#get_info_method">Getting information about any method</a></li>
-    <li><a href="#get_assemblies">Get the assemblies</a></li>
     <li><a href="#call_function">Calling a function with "il2cpp_runtime_invoke"</a></li>
     <li><a href="#list_all_functions">Getting a List of All Functions in the Target Class</a></li>
     <li><a href="#get_field_info">Getting Information about Class Fields (FieldInfo)</a></li>
     <li><a href="#modify_field">Modifiying the Value of a Field</a></li>
   </ul>
 </nav>
+
+<br><br>
+
+<h2 id="get_assemblies">Get the assemblies</h2>
+
+<span>This code snippet demonstrates how to retrieve a list of all assemblies within the active domain using il2cpp API functions.</span>
+
+```cpp
+// Get the active domain
+const Il2CppDomain* domain = il2cpp_domain_get();
+
+// Define variables to hold the assembly list
+const Il2CppAssembly** assemblies;
+size_t size;
+
+// Use the il2cpp_domain_get_assemblies function to retrieve all assemblies
+assemblies = il2cpp_domain_get_assemblies(domain, &size);
+
+// Iterate through each assembly in the list
+for (size_t i = 0; i < size; ++i) {
+    const Il2CppAssembly* assembly = assemblies[i];
+
+    if (assembly) {
+        // Get the assembly name using il2cpp_image_get_name function
+        const char* assemblyName = il2cpp_image_get_name(assembly->image);
+        
+        // Print the name of the assembly to the console
+        std::cout << assemblyName << "\n";
+    }
+}
+```
+
+<h2>Summary of Get the assemblies</h2>
+
+<ol>
+    <li>
+        <strong>Get the Active Domain:</strong>
+        <ul>
+            <li><strong>Function:</strong> <code>il2cpp_domain_get</code></li>
+            <li><strong>Description:</strong> Retrieves the active domain (<code>Il2CppDomain</code>) where the program is currently running.</li>
+        </ul>
+    </li>
+    <li>
+        <strong>Retrieve Assemblies:</strong>
+        <ul>
+            <li><strong>Function:</strong> <code>il2cpp_domain_get_assemblies</code></li>
+            <li><strong>Description:</strong> Retrieves a list of all assemblies (<code>Il2CppAssembly</code>) within the specified domain (<code>Il2CppDomain</code>). The function returns an array of <code>Il2CppAssembly</code> pointers (<code>assemblies</code>) and updates the <code>size</code> variable with the number of assemblies found.</li>
+        </ul>
+    </li>
+    <li>
+        <strong>Iterate Through Assemblies:</strong>
+        <ul>
+            <li>Using a <code>for</code> loop, iterate through each assembly in the <code>assemblies</code> array.</li>
+        </ul>
+    </li>
+    <li>
+        <strong>Get Assembly Name:</strong>
+        <ul>
+            <li><strong>Function:</strong> <code>il2cpp_image_get_name</code></li>
+            <li><strong>Description:</strong> Retrieves the name of the assembly associated with the given image (<code>Il2CppImage</code>) within the assembly structure (<code>Il2CppAssembly</code>). It returns a <code>const char*</code> containing the assembly name.</li>
+        </ul>
+    </li>
+    <li>
+        <strong>Print Assembly Names:</strong>
+        <ul>
+            <li>Print each assembly name retrieved from <code>il2cpp_image_get_name</code> to the console (<code>std::cout</code>).</li>
+        </ul>
+    </li>
+</ol>
+
+<p>Output: </p>
+<img src="img/1.png" width="650">
+
+<br><br>
 
 <h2 id="type_usage">Getting the type from a class (Il2CppObject* to Type*)</h2>
 
@@ -185,10 +259,11 @@ GameObject[] allGameObjects = FindObjectsOfType<GameObject>();
 <p>Output: </p>
 <img src="img/2.png" alt="Gameobjects" width="650">
 
+<br><br>
 
 <h2 id="get_class_names_types">Getting class names and types from a specific assembly</h2>
 
-* It prints the list of namespace and class names in the specified image.
+<p>This code snippet demonstrates how to retrieve and print the names and namespaces of classes within a specified assembly using il2cpp API functions.</p>
 
 ```cpp
 void Il2CppHelper::GetClassesAndNamesFromAssembly(const Il2CppImage* _image)
@@ -219,7 +294,6 @@ void Il2CppHelper::GetClassesAndNamesFromAssembly(const Il2CppImage* _image)
 ```
 
 
-
 ```cpp
 const Il2CppImage* _BoltDll = _helper->GetImage("bolt.dll");
 
@@ -242,6 +316,7 @@ if (_assemblyCSHARP) {
 <img src="img/3.png" width="650">
 <img src="img/4.png" width="650">
 
+<br><br>
 
 <h2 id="get_info_method">Getting information about any method </h2>
 
@@ -304,34 +379,7 @@ _helper->GetMethodInfo(_AssemblyCSharp, "SetFOV", 1, "NolanBehaviour", "");
 <p>Output: </p>
 <img src="img/5.png" width="650">
 
-<h2 id="get_assemblies">Get the assemblies</h2>
-
-* This code retrieves the active domain (Il2CppDomain) and then obtains a list of all assemblies within that domain using the il2cpp_domain_get_assemblies function. It retrieves the assembly name using the il2cpp_image_get_name function and prints the names of these assemblies to the console.
-
-```cpp
-// Get the active domain
-const Il2CppDomain* domain = il2cpp_domain_get();
-
-// Define variables to hold the assembly list
-const Il2CppAssembly** assemblies;
-size_t size;
-
-// Use the il2cpp_domain_get_assemblies function to retrieve all assemblies
-assemblies = il2cpp_domain_get_assemblies(domain, &size);
-
-for (size_t i = 0; i < size; ++i) {
-	const Il2CppAssembly* assembly = assemblies[i];
-
-	if (assembly) {
-		// Get the assembly name using il2cpp_image_get_name function
-		const char* assemblyName = il2cpp_image_get_name(assembly->image);
-		std::cout << assemblyName << "\n";
-	}
-}
-```
-
-<p>Output: </p>
-<img src="img/1.png" width="650">
+<br><br>
 
 <h2 id="call_function">Calling a function with "il2cpp_runtime_invoke"</h2> 
 
@@ -375,6 +423,7 @@ if (GetAsyncKeyState(VK_F2) & 0x8000) {
 <p>Output: </p>
 <img src="img/6.png" width="650">
 
+<br><br>
 
 <h2 id="list_all_functions">Getting a List of All Functions in the Target Class</h2>
 
@@ -421,6 +470,8 @@ if (_image) {
 <p>Output: </p>
 <img src="img/8.png" width="650">
 
+<br><br>
+
 <h2 id="get_field_info">Getting Information about Class Fields (FieldInfo)</h2>
 
 * It allows us to get information about the fields of a class
@@ -463,6 +514,7 @@ if (_assemblyCSHARP) {
 <p>Output: </p>
 <img src="img/7.png" width="650">
 
+<br><br>
 
 <h2 id="modify_field">Modifiying the Value of a Field</h2>
 
