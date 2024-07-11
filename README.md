@@ -15,7 +15,6 @@ Having knowledge of C++ and C# is essential. You should also be familiar with th
 
 > [!NOTE]  
 > I wrote my own helper class. You can access it under the lib folder. Throughout the guide, I will be using the helper functions I created.
-
   
 ## Video
 [![Video](https://img.youtube.com/vi/L7s2ttcNEh0/0.jpg)](https://www.youtube.com/watch?v=L7s2ttcNEh0)
@@ -29,6 +28,9 @@ Steam: Jadis0x
 ## Examples
 > [!TIP]
 > You can find more detailed examples by taking a look at [HERE](https://github.com/ALittlePatate/DevourClient) using the Il2cppInspector analysis tool I used to create the cheat.
+
+> [!NOTE]  
+> I am updating the guide. I will try to add detailed explanations as much as I can.
 
 ## Contents
 
