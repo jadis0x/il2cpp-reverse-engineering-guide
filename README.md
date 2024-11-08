@@ -44,10 +44,11 @@ Steam: Jadis0x
     <li><a href="#list_all_functions">Getting a List of All Functions in the Target Class</a></li>
     <li><a href="#get_field_info">Getting Information about Class Fields (FieldInfo)</a></li>
     <li><a href="#modify_field">Modifiying the Value of a Field</a></li>
+    <li><a href="#write_FindObjectOfType_function">Writing our helper function "FindObjectOfType"</a></li>
   </ul>
 </nav>
 
-<br><br>
+<br>
 
 <h2 id="get_assemblies">Get the assemblies</h2>
 
@@ -119,7 +120,7 @@ for (size_t i = 0; i < size; ++i) {
 <p>Output: </p>
 <img src="img/1.png" width="650">
 
-<br><br>
+<br>
 
 <h2 id="type_usage">Getting the type from a class (Il2CppObject* to Type*)</h2>
 
@@ -261,7 +262,7 @@ GameObject[] allGameObjects = FindObjectsOfType<GameObject>();
 <p>Output: </p>
 <img src="img/2.png" alt="Gameobjects" width="650">
 
-<br><br>
+<br>
 
 <h2 id="get_class_names_types">Getting class names and types from a specific assembly</h2>
 
@@ -318,7 +319,7 @@ if (_assemblyCSHARP) {
 <img src="img/3.png" width="650">
 <img src="img/4.png" width="650">
 
-<br><br>
+<br>
 
 <h2 id="get_info_method">Getting information about any method </h2>
 
@@ -562,6 +563,178 @@ if (GetAsyncKeyState(VK_F1) & 0x8000) {
 			}
 		}
 	}
+}
+```
+
+<br><br>
+
+<h2 id="write_FindObjectOfType_function">Writing our helper function "FindObjectOfType"</h2>
+
+**FindObjectOfType** function is used to search for an object of a specific class (type). Our goal is to write our own function that will simplify this process in the IL2CPP environment. This way, we can obtain a more flexible and customized solution for direct access to Unity's objects.
+
+**Basic Logic of the Function:**
+
+- **Load the Assembly:** We open the specified assembly file to access its classes.
+- **Find the Class:** We locate the class in the assembly using the className parameter.
+- **Get the Type of the Class:** We access the type (Type) of the class we found.
+- **Search for the Unity Object:** We perform an object search using Unity's internal functions (e.g., app::Object_1_FindObjectOfType) -> defined in the *il2cpp-functions.h* header file.
+- **Result**: Once the object is found, we return it by casting to the appropriate type (T)."
+
+<br>
+
+**Here is the function we will write according to the logic explained above:**
+
+```cpp
+template<typename T>
+T* FindObjectOfType(const char* className, const char* classNamespace = "", const char* assemblyName = "Assembly-CSharp.dll") {
+    // Getting the IL2CPP domain - the domain represents the runtime environment where all objects are loaded
+    Il2CppDomain* domain = il2cpp_domain_get();
+    if (!domain) {
+        std::cerr << "Error: Failed to get IL2CPP domain!" << std::endl;
+        return nullptr;
+    }
+
+    // Loading the assembly - loading the specific assembly (like Assembly-CSharp.dll) in which the class is defined
+    const Il2CppAssembly* assembly = il2cpp_domain_assembly_open(domain, assemblyName);
+    if (!assembly) {
+        std::cerr << "Error: Failed to load assembly (" << assemblyName << ")" << std::endl;
+        return nullptr;
+    }
+
+    // Loading the class by name - locating the class inside the assembly using classNamespace and className
+    Il2CppClass* klass = il2cpp_class_from_name(assembly->image, classNamespace, className);
+    if (!klass) {
+        std::cerr << "Error: Class not found (" << classNamespace << "::" << className << ")" << std::endl;
+        return nullptr;
+    }
+
+    // Getting the class type - retrieving the type information of the class (Il2CppType)
+    const Il2CppType* type = il2cpp_class_get_type(klass);
+    if (!type) {
+        std::cerr << "Error: Failed to get class type (" << className << ")" << std::endl;
+        return nullptr;
+    }
+
+    // Getting the type object - using the class type to get the corresponding type object in Unity
+    Il2CppObject* typeObject = il2cpp_type_get_object(type);
+    if (!typeObject) {
+        std::cerr << "Error: Failed to get type object!" << std::endl;
+        return nullptr;
+    }
+
+    // Calling Unity's FindObjectOfType method - this function finds the first object of the given type in the scene
+    app::Object_1* foundObject = app::Object_1_FindObjectOfType(reinterpret_cast<app::Type*>(typeObject), nullptr);
+    if (!foundObject) {
+        std::cerr << "Warning: Object not found (" << className << ")" << std::endl;
+        return nullptr;
+    }
+
+    // Returning the found object cast to the specified type
+    return reinterpret_cast<T*>(foundObject);
+}
+```
+
+<br>
+
+Now, let me show an example from the macro below using our FindObjectOfType function. The following function simulates the click of the 'Start' button in the lobby menu.
+```cpp
+DO_APP_FUNC(0x006AC8A0, void, Menu_OnLobbyStartButtonClick, (Menu * __this, MethodInfo * method));
+```
+
+<br>
+
+```cpp
+#include "pch-il2cpp.h"
+
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#include <iostream>
+#include "il2cpp-appdata.h"
+#include "helpers.h"
+
+#include <chrono>
+#include <thread>
+
+extern const LPCWSTR LOG_FILE = L"il2cpp-log.txt";
+
+// Template function to find an object of a specified class type in the Unity scene
+// This function is used to search for the first instance of a class in the scene by class name
+template<typename T>
+T* FindObjectOfType(const char* className, const char* classNamespace = "", const char* assemblyName = "Assembly-CSharp.dll") {
+    // Getting the IL2CPP domain - the domain represents the runtime environment where all objects are loaded
+    Il2CppDomain* domain = il2cpp_domain_get();
+    if (!domain) {
+        std::cerr << "Error: Failed to get IL2CPP domain!" << std::endl;
+        return nullptr;
+    }
+
+    // Loading the assembly - loading the specific assembly (like Assembly-CSharp.dll) in which the class is defined
+    const Il2CppAssembly* assembly = il2cpp_domain_assembly_open(domain, assemblyName);
+    if (!assembly) {
+        std::cerr << "Error: Failed to load assembly (" << assemblyName << ")" << std::endl;
+        return nullptr;
+    }
+
+    // Loading the class by name - locating the class inside the assembly using classNamespace and className
+    Il2CppClass* klass = il2cpp_class_from_name(assembly->image, classNamespace, className);
+    if (!klass) {
+        std::cerr << "Error: Class not found (" << classNamespace << "::" << className << ")" << std::endl;
+        return nullptr;
+    }
+
+    // Getting the class type - retrieving the type information of the class (Il2CppType)
+    const Il2CppType* type = il2cpp_class_get_type(klass);
+    if (!type) {
+        std::cerr << "Error: Failed to get class type (" << className << ")" << std::endl;
+        return nullptr;
+    }
+
+    // Getting the type object - using the class type to get the corresponding type object in Unity
+    Il2CppObject* typeObject = il2cpp_type_get_object(type);
+    if (!typeObject) {
+        std::cerr << "Error: Failed to get type object!" << std::endl;
+        return nullptr;
+    }
+
+    // Calling Unity's FindObjectOfType method - this function finds the first object of the given type in the scene
+    app::Object_1* foundObject = app::Object_1_FindObjectOfType(reinterpret_cast<app::Type*>(typeObject), nullptr);
+    if (!foundObject) {
+        std::cerr << "Warning: Object not found (" << className << ")" << std::endl;
+        return nullptr;
+    }
+
+    // Returning the found object cast to the specified type
+    return reinterpret_cast<T*>(foundObject);
+}
+
+void Run()
+{
+	// Initialize thread data - DO NOT REMOVE
+	Il2CppDomain* domain = il2cpp_domain_get();
+	il2cpp_thread_attach(domain);
+
+
+	il2cppi_new_console();
+
+    while (true) {
+        // Check if the F1 key is pressed - GetAsyncKeyState returns the state of a specific key
+        if (GetAsyncKeyState(VK_F1) & 0x8000) {
+
+            // Try to find the "Menu" object in the "Horror" namespace
+            app::Menu* _menu = FindObjectOfType<app::Menu>("Menu", "Horror");
+
+            // If the menu is found, attempt to invoke the 'OnLobbyStartButtonClick' function
+            if (_menu) {
+                // Ensure that the function pointer is valid before calling it
+                if (app::Menu_OnLobbyStartButtonClick != nullptr) {
+                    app::Menu_OnLobbyStartButtonClick(_menu, nullptr); // Simulates the click of the "Start" button in the lobby menu
+                }
+            }
+
+        }
+
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
 }
 ```
 
