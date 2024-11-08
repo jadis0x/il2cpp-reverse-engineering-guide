@@ -29,9 +29,6 @@ Steam: Jadis0x
 > [!TIP]
 > You can find more detailed examples by taking a look at [HERE](https://github.com/ALittlePatate/DevourClient) using the Il2cppInspector analysis tool I used to create the cheat.
 
-> [!NOTE]  
-> I am updating the guide. I will try to add detailed explanations as much as I can.
-
 ## Contents
 
 <nav>
