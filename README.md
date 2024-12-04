@@ -46,8 +46,6 @@ Steam: Jadis0x
   </ul>
 </nav>
 
-<br>
-
 <h2 id="get_assemblies">Get the assemblies</h2>
 
 <span>This code snippet demonstrates how to retrieve a list of all assemblies within the active domain using il2cpp API functions.</span>
