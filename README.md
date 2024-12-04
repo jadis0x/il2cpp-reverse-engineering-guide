@@ -42,7 +42,7 @@ Steam: Jadis0x
     <li><a href="#get_field_info">Getting Information about Class Fields (FieldInfo)</a></li>
     <li><a href="#modify_field">Changing the Value of a Class Field</a></li>
     <li><a href="#write_FindObjectOfType_function">Creating a Helper Function to Find Objects of a Specific Type ("FindObjectOfType")</a></li>
-    <li><a href="#readingProperty">Reading and Managing Static and Instance Properties"</a></li>
+    <li><a href="#readingProperty">Reading and Managing Static and Instance Properties</a></li>
   </ul>
 </nav>
 
