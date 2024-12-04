@@ -1067,4 +1067,79 @@ Output:
 
 <img src="img/10.png" width="650">
 
+Finally, just like with the GameObject logic, let's create a UTransform class and demonstrate it with an example
+
+```cpp
+class UTransform : public PropertyAccessor {
+public:
+    UTransform(app::Transform* transform) : PropertyAccessor("UnityEngine.CoreModule.dll")
+    {
+        this->transform = transform;
+    }
+private:
+    app::Transform* transform;
+public:
+    app::Vector3 GetPosition() {
+        auto obj = getInstanceProperty<Il2CppObject*>(reinterpret_cast<Il2CppObject*>(transform), "position");
+        return *(reinterpret_cast<app::Vector3*>(il2cpp_object_unbox(obj)));
+    }
+    app::Vector3 GetRotation() {
+        auto obj = getInstanceProperty<Il2CppObject*>(reinterpret_cast<Il2CppObject*>(transform), "rotation");
+        return *(reinterpret_cast<app::Vector3*>(il2cpp_object_unbox(obj)));
+    }
+    app::Vector3 GetScale() {
+        auto obj = getInstanceProperty<Il2CppObject*>(reinterpret_cast<Il2CppObject*>(transform), "localScale");
+        return *(reinterpret_cast<app::Vector3*>(il2cpp_object_unbox(obj)));
+    }
+};
+```
+
+```cpp
+void Run()
+{
+	// Initialize thread data - DO NOT REMOVE
+	il2cpp_thread_attach(il2cpp_domain_get());
+
+
+	il2cppi_new_console();
+
+    // Create an instance of UGameObject
+    UGameObject gameObjectHelper;
+
+    while (true) {
+        // Check if the F1 key is pressed - GetAsyncKeyState returns the state of a specific key
+        if (GetAsyncKeyState(VK_F1) & 0x8000) {
+            // Example usage: Find a GameObject by tag
+            app::GameObject* myObject = gameObjectHelper.FindWithTag("Player");
+            if (myObject) {
+                std::cout << "GameObject found with tag 'Player'.\n";
+
+                app::Transform* playerTransform = gameObjectHelper.GetTransform(myObject);
+                if (playerTransform) {
+                    std::cout << "Transform component retrieved.\n";
+
+                    UTransform transformHelper(playerTransform);
+
+                    std::cout << "Position: [x,y,z]" << transformHelper.GetPosition().x << "," << transformHelper.GetPosition().y << "," << transformHelper.GetPosition().z << "\n";
+                    std::cout << "Rotation: [x,y,z]" << transformHelper.GetRotation().x << "," << transformHelper.GetRotation().y << "," << transformHelper.GetRotation().z << "\n";
+                    std::cout << "Scale: [x,y,z]" << transformHelper.GetScale().x << "," << transformHelper.GetScale().y << "," << transformHelper.GetScale().z << "\n";
+                }
+                else {
+                    std::cout << "[Error] Transform component not found.\n";
+                }
+            }
+            else {
+                std::cout << "[Error] GameObject with tag 'Player' not found. -> you're probably on the menu, so it's normal\n";
+            }
+        }
+
+        Sleep(1000);
+    }
+}
+```
+
+Output:
+
+<img src="img/11.png" width="650">
+
 I will continue to contribute as much as I can. For now, bye!
