@@ -735,4 +735,219 @@ void Run()
 }
 ```
 
+<br><br>
+
+<h2 id="readingProperty">Reading and Managing Static and Instance Properties</h2>
+
+A guide to accessing and managing static and instance properties. Explains how to create a custom PropertyAccessor class
+
+```cpp
+// The `PropertyAccessor` class provides an interface to interact with Il2Cpp objects,
+// enabling access to classes, static properties, and instance properties in a given assembly.
+class PropertyAccessor {
+private:
+    /**
+     * @brief Finds an Il2Cpp class by its namespace and class name within the current image.
+     *
+     * This method is used to locate and retrieve a class definition from the Il2Cpp image.
+     * It performs checks to ensure the image, assembly, and class exist.
+     *
+     * @param namespaceName The namespace where the target class resides.
+     * @param className The name of the class to find.
+     * @return A pointer to the `Il2CppClass` if found; otherwise, nullptr.
+     */
+    Il2CppClass* FindClass(const std::string& namespaceName, const std::string& className) {
+        if (!currentImage) {
+            std::cout << "[Error] Current image is null." << std::endl;
+            return nullptr;
+        }
+
+        const Il2CppAssembly* assembly = currentImage->assembly;
+        if (!assembly) {
+            std::cout << "[Error] Assembly is null." << std::endl;
+            return nullptr;
+        }
+
+        const Il2CppImage* image = il2cpp_assembly_get_image(assembly);
+        if (!image) {
+            std::cout << "[Error] Image is null." << std::endl;
+            return nullptr;
+        }
+
+        Il2CppClass* klass = il2cpp_class_from_name(image, namespaceName.c_str(), className.c_str());
+        if (!klass) {
+            std::cout << "[Error] Class not found: " << namespaceName << "." << className << std::endl;
+            return nullptr;
+        }
+
+        return klass;
+    }
+
+public:
+    /**
+     * @brief Constructs the `PropertyAccessor` object, initializing the image for the specified assembly.
+     *
+     * This constructor initializes the current Il2Cpp image by opening the specified assembly
+     * in the current domain. The image is required for accessing classes and properties.
+     *
+     * @param assemblyName The name of the assembly to load (e.g., "UnityEngine.CoreModule.dll").
+     */
+    PropertyAccessor(const char* assemblyName) {
+        // Retrieve the Il2Cpp domain
+        Il2CppDomain* domain = il2cpp_domain_get();
+        if (!domain) {
+            std::cout << "[ERROR] Il2Cpp domain not available.";
+        }
+
+        // Open the specified assembly and retrieve its image
+        if (assemblyName && *assemblyName) {
+            currentImage = il2cpp_domain_assembly_open(domain, assemblyName)->image;
+            if (!currentImage) {
+                std::cout << "[ERROR] Assembly not found: " + std::string(assemblyName);
+            }
+        }
+    }
+
+    /**
+     * @brief Retrieves the value of a static property from a given class.
+     *
+     * This method finds the class by its namespace and name, locates the getter method
+     * for the specified property, and invokes the method to retrieve the property value.
+     *
+     * @tparam T The expected type of the property value.
+     * @param classNamespace The namespace of the target class.
+     * @param className The name of the class containing the static property.
+     * @param propertyName The name of the property to retrieve.
+     * @return The value of the property as type `T`.
+     */
+    template <typename T>
+    T getStaticProperty(const std::string& classNamespace, const std::string& className, const std::string& propertyName) {
+        Il2CppClass* klass = FindClass(classNamespace, className);
+        if (!klass) {
+            std::cout << "[Error] Class not found: " + classNamespace + "." + className;
+        }
+
+        std::string getterName = "get_" + propertyName;
+        const MethodInfo* getterMethod = il2cpp_class_get_method_from_name(klass, getterName.c_str(), 0);
+        if (!getterMethod) {
+            std::cout << "[Error] Getter method not found: " + propertyName;
+        }
+
+        // Invoke the getter method to retrieve the property value
+        Il2CppObject* result = il2cpp_runtime_invoke(getterMethod, nullptr, nullptr, nullptr);
+        return convertResult<T>(result);
+    }
+
+    /**
+     * @brief Retrieves the value of an instance property from a given object.
+     *
+     * This method checks the validity of the provided instance, locates the getter
+     * method for the specified property, and invokes it to retrieve the property value.
+     *
+     * @tparam T The expected type of the property value.
+     * @param instance A pointer to the Il2CppObject instance.
+     * @param propertyName The name of the property to retrieve.
+     * @return The value of the property as type `T`.
+     */
+    template <typename T>
+    T getInstanceProperty(Il2CppObject* instance, const std::string& propertyName) {
+        if (!instance) {
+            std::cout << "[Error] Instance is null.";
+        }
+
+        Il2CppClass* klass = il2cpp_object_get_class(instance);
+        if (!klass) {
+            std::cout << "[Error] Class not found.";
+        }
+
+        std::string getterName = "get_" + propertyName;
+        const MethodInfo* getterMethod = il2cpp_class_get_method_from_name(klass, getterName.c_str(), 0);
+        if (!getterMethod) {
+            std::cout << "[Error] Getter method not found: " + propertyName;
+        }
+
+        // Invoke the getter method to retrieve the property value
+        Il2CppObject* result = il2cpp_runtime_invoke(getterMethod, instance, nullptr, nullptr);
+        return convertResult<T>(result);
+    }
+
+    /**
+     * @brief Converts the Il2CppObject result to the desired type `T`.
+     *
+     * This method supports basic data types (e.g., strings, numerics, enums) and
+     * directly returns pointers for complex object types.
+     *
+     * @tparam T The expected type of the result.
+     * @param result The `Il2CppObject` to be converted.
+     * @return The converted result as type `T`.
+     */
+    template <typename T>
+    T convertResult(Il2CppObject* result) {
+        if (!result) {
+            std::cout << "[Error] Null result.";
+        }
+
+        if constexpr (std::is_same_v<T, std::string>) {
+            // Convert Il2CppString to std::string
+            Il2CppString* il2cppString = reinterpret_cast<Il2CppString*>(result);
+            return il2cppi_to_string(il2cppString);
+        }
+        else if constexpr (std::is_arithmetic_v<T> || std::is_enum_v<T>) {
+            // Unbox primitive types or enums
+            return *(T*)il2cpp_object_unbox(result);
+        }
+        else {
+            // Return the result as a raw pointer for other types
+            return reinterpret_cast<T>(result);
+        }
+    }
+
+private:
+    const Il2CppImage* currentImage; // The Il2CppImage associated with the target assembly.
+};
+```
+
+Now that we have written our PropertyAccessor class, let's create some examples and test it. We will use the PropertyAccessor class to read static properties like Application.version and Application.dataPath, and to retrieve the main camera instance
+
+```cpp
+void Run()
+{
+	// Initialize thread data - DO NOT REMOVE
+	il2cpp_thread_attach(il2cpp_domain_get());
+
+
+	il2cppi_new_console();
+
+	PropertyAccessor appProperty("UnityEngine.CoreModule.dll");
+
+	//UnityEngine.Application.version
+	std::cout << appProperty.getStaticProperty<std::string>("UnityEngine", "Application", "version") << "\n";
+
+	//UnityEngine.Application.dataPath
+	std::cout << appProperty.getStaticProperty<std::string>("UnityEngine", "Application", "dataPath") << "\n";
+
+	//UnityEngine.Application.productName
+	std::cout << appProperty.getStaticProperty<std::string>("UnityEngine", "Application", "productName") << "\n";
+
+	//UnityEngine.Application.unityVersion
+	std::cout << appProperty.getStaticProperty<std::string>("UnityEngine", "Application", "unityVersion") << "\n";
+
+	PropertyAccessor cameraProperty("UnityEngine.CoreModule.dll");
+
+	//UnityEngine.Camera.main
+	app::Camera* mainCamera = cameraProperty.getStaticProperty<app::Camera*>("UnityEngine", "Camera", "main");
+	
+	if (mainCamera) {
+		std::cout << "main camera retrieved!!\n";
+	}
+	else {
+		std::cout << "main camera is nullptr.\n";
+	}
+}
+```
+
+Output:<br>
+
+<img src="img/9.png" width="650">
+
 I will continue to contribute as much as I can. For now, bye!
