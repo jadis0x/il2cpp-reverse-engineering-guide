@@ -34,14 +34,15 @@ Steam: Jadis0x
 <nav>
   <ul>
     <li><a href="#get_assemblies">Get the assemblies</a></li>
-    <li><a href="#type_usage">Getting the type from a class (Il2CppObject* to Type*)</a></li>
+    <li><a href="#type_usage">Converting an Il2CppObject* to Type* and Understanding Its Usage</a></li>
     <li><a href="#get_class_names_types">Getting class names and types from a specific assembly</a></li>
     <li><a href="#get_info_method">Getting information about any method</a></li>
-    <li><a href="#call_function">Calling a function with "il2cpp_runtime_invoke"</a></li>
+    <li><a href="#call_function">Executing a Method Using "il2cpp_runtime_invoke"</a></li>
     <li><a href="#list_all_functions">Getting a List of All Functions in the Target Class</a></li>
     <li><a href="#get_field_info">Getting Information about Class Fields (FieldInfo)</a></li>
-    <li><a href="#modify_field">Modifiying the Value of a Field</a></li>
-    <li><a href="#write_FindObjectOfType_function">Writing our helper function "FindObjectOfType"</a></li>
+    <li><a href="#modify_field">Changing the Value of a Class Field</a></li>
+    <li><a href="#write_FindObjectOfType_function">Creating a Helper Function to Find Objects of a Specific Type ("FindObjectOfType")</a></li>
+    <li><a href="#readingProperty">Reading and Managing Static and Instance Properties"</a></li>
   </ul>
 </nav>
 
@@ -119,7 +120,7 @@ for (size_t i = 0; i < size; ++i) {
 
 <br>
 
-<h2 id="type_usage">Getting the type from a class (Il2CppObject* to Type*)</h2>
+<h2 id="type_usage">Converting an Il2CppObject* to Type* and Understanding Its Usage</h2>
 
 To obtain the type information here, we will use the GetTypeFromClass function inside my Il2cppHelper class.
 
@@ -565,7 +566,7 @@ if (GetAsyncKeyState(VK_F1) & 0x8000) {
 
 <br><br>
 
-<h2 id="write_FindObjectOfType_function">Writing our helper function "FindObjectOfType"</h2>
+<h2 id="write_FindObjectOfType_function">Creating a Helper Function to Find Objects of a Specific Type ("FindObjectOfType")</h2>
 
 **FindObjectOfType** function is used to search for an object of a specific class (type). Our goal is to write our own function that will simplify this process in the IL2CPP environment. This way, we can obtain a more flexible and customized solution for direct access to Unity's objects.
 
