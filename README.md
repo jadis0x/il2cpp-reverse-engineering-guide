@@ -949,4 +949,122 @@ Output:<br>
 
 <img src="img/9.png" width="650">
 
+Now, let's move on to further enhancing our class. I will create a UGameObject class that will inherit from PropertyAccessor. This class will serve as a dedicated helper for operations related to GameObject. It will encapsulate all the functionality required for interacting with GameObject instances, such as retrieving objects by tag, accessing their properties, and performing related tasks in a structured manner.
+
+```cpp
+class UGameObject : public PropertyAccessor {
+public:
+    UGameObject() : PropertyAccessor("UnityEngine.CoreModule.dll") {}
+
+    // Finds a GameObject by tag
+    app::GameObject* FindWithTag(const char* tag) {
+        // Find GameObject class
+        Il2CppClass* klass = FindClass("UnityEngine", "GameObject");
+        if (!klass) {
+            std::cout << "[Error] GameObject class not found.\n";
+            return nullptr;
+        }
+
+        // Find the FindWithTag method
+        const MethodInfo* method = il2cpp_class_get_method_from_name(klass, "FindWithTag", 1);
+        if (!method) {
+            std::cout << "[Error] GameObject.FindWithTag method not found.\n";
+            return nullptr;
+        }
+
+        // Create Il2CppString for the tag
+        Il2CppString* il2cppTag = il2cpp_string_new(tag);
+
+        // Invoke the method
+        Il2CppException* exception = nullptr;
+        Il2CppObject* result = il2cpp_runtime_invoke(method, nullptr, reinterpret_cast<void**>(&il2cppTag), &exception);
+
+        if (exception) {
+            char exceptionMessage[1024];
+            il2cpp_format_exception(exception, exceptionMessage, sizeof(exceptionMessage));
+            std::cout << "[Error] Exception occurred during FindWithTag call: " << exceptionMessage << "\n";
+            return nullptr;
+        }
+
+        if (result) {
+            return reinterpret_cast<app::GameObject*>(result);
+        }
+
+        return nullptr;
+    }
+
+    // Retrieves the activeInHierarchy property
+    bool GetActiveInHierarchy(app::GameObject* gameObject) {
+        return getInstanceProperty<bool>(reinterpret_cast<Il2CppObject*>(gameObject), "activeInHierarchy");
+    }
+
+    // Retrieves the activeSelf property
+    bool GetActiveSelf(app::GameObject* gameObject) {
+        return getInstanceProperty<bool>(reinterpret_cast<Il2CppObject*>(gameObject), "activeSelf");
+    }
+
+    // Retrieves the layer property
+    int GetLayer(app::GameObject* gameObject) {
+        return getInstanceProperty<int>(reinterpret_cast<Il2CppObject*>(gameObject), "layer");
+    }
+
+    // Retrieves the tag property
+    std::string GetTag(app::GameObject* gameObject) {
+        return getInstanceProperty<std::string>(reinterpret_cast<Il2CppObject*>(gameObject), "tag");
+    }
+
+    // Retrieves the transform property
+    app::Transform* GetTransform(app::GameObject* gameObject) {
+        return getInstanceProperty<app::Transform*>(reinterpret_cast<Il2CppObject*>(gameObject), "transform");
+    }
+};
+```
+
+Now, let's move on to creating an example
+
+```cpp
+void Run()
+{
+	// Initialize thread data - DO NOT REMOVE
+	il2cpp_thread_attach(il2cpp_domain_get());
+
+
+	il2cppi_new_console();
+
+    // Create an instance of UGameObject
+    UGameObject gameObjectHelper;
+
+    while (true) {
+        // Check if the F1 key is pressed - GetAsyncKeyState returns the state of a specific key
+        if (GetAsyncKeyState(VK_F1) & 0x8000) {
+            // Example usage: Find a GameObject by tag
+            app::GameObject* myObject = gameObjectHelper.FindWithTag("Player");
+            if (myObject) {
+                std::cout << "GameObject found with tag 'Player'.\n";
+                std::cout << "Active in Hierarchy: " << gameObjectHelper.GetActiveInHierarchy(myObject) << "\n";
+                std::cout << "Active Self: " << gameObjectHelper.GetActiveSelf(myObject) << "\n";
+                std::cout << "Layer: " << gameObjectHelper.GetLayer(myObject) << "\n";
+                std::cout << "Tag: " << gameObjectHelper.GetTag(myObject) << "\n";
+
+                app::Transform* transform = gameObjectHelper.GetTransform(myObject);
+                if (transform) {
+                    std::cout << "Transform component retrieved.\n";
+                }
+                else {
+                    std::cout << "[Error] Transform component not found.\n";
+                }
+            }
+            else {
+                std::cout << "[Error] GameObject with tag 'Player' not found. -> you're probably on the menu, so it's normal\n";
+            }
+        }
+
+        Sleep(1000);
+    }
+}
+```
+Output:
+
+<img src="img/10.png" width="650">
+
 I will continue to contribute as much as I can. For now, bye!
