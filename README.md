@@ -123,30 +123,26 @@ for (size_t i = 0; i < size; ++i) {
 To obtain the type information here, we will use the GetTypeFromClass function inside my Il2cppHelper class.
 
 ```cpp
-Il2CppObject* Il2CppHelper::GetTypeFromClass(const Il2CppImage* _image, const char* _namespaze, const char* _name)
+Il2CppObject* Il2CppHelper::GetTypeFromClass(const Il2CppImage* image, const char* namespaze, const char* className)
 {
-    // Retrieve the class information using the image, namespace, and class name
-    Il2CppClass* _targetClass = il2cpp_class_from_name(_image, _namespaze, _name);
-
-    // If the class is found
-    if (_targetClass) {
-        // Get the type information from the class
-        const Il2CppType* _targetType = il2cpp_class_get_type(_targetClass);
-
-        // If the type information is found
-        if (_targetType) {
-            // Get the Il2CppObject from the type information
-            Il2CppObject* targetObject = il2cpp_type_get_object(_targetType);
-
-            // If the object is successfully retrieved, return it
-            if (targetObject) {
-                return targetObject;
-            }
-        }
+    if (!image) {
+        return nullptr;
     }
 
-    // If any step fails, return nullptr
-    return nullptr;
+    // Retrieve the Il2CppClass pointer
+    Il2CppClass* targetClass = il2cpp_class_from_name(image, namespaze, className);
+    if (!targetClass) {
+        return nullptr;
+    }
+
+    // Retrieve the Il2CppType pointer
+    const Il2CppType* targetType = il2cpp_class_get_type(targetClass);
+    if (!targetType) {
+        return nullptr;
+    }
+
+    // Retrieve the Il2CppObject pointer
+    return il2cpp_type_get_object(targetType); // If it fails, nullptr will be returned.
 }
 ```
 
@@ -161,34 +157,45 @@ const Il2CppImage* _CoreModule = _helper->GetImage("UnityEngine.CoreModule.dll")
 ```cpp
 if (_CoreModule) {
     // Get the type information for the GameObject class in the UnityEngine namespace
-    Il2CppObject* _object = _helper->GetTypeFromClass(_CoreModule, "UnityEngine", "GameObject");
+    Il2CppObject* objectType = _helper->GetTypeFromClass(_CoreModule, "UnityEngine", "GameObject");
 
-    // If the type information is successfully retrieved
-    if (_object) {
-        // Cast the Il2CppObject to Type
-        Type* gameobjectType = reinterpret_cast<Type*>(_object);
+    // Ensure the type information is retrieved successfully
+    if (!objectType) {
+        std::cout << "Failed to retrieve GameObject type.\n";
+        return;
+    }
 
-        // If the type casting is successful
-        if (gameobjectType) {
-            // Find all objects of the GameObject type
-            Object_1__Array* getAllGameObjects = Object_1_FindObjectsOfType(gameobjectType, nullptr);
+    // Cast Il2CppObject to Type
+    Type* gameObjectType = reinterpret_cast<Type*>(objectType);
+    if (!gameObjectType) {
+        std::cout << "Failed to cast to Type.\n";
+        return;
+    }
 
-            // Print the count of GameObject instances
-            std::cout << "Gameobject count: " << getAllGameObjects->max_length << "\n";
+    // Find all GameObject instances
+    Object_1__Array* allGameObjects = Object_1_FindObjectsOfType(gameObjectType, nullptr);
+    if (!allGameObjects) {
+        std::cout << "No GameObjects found.\n";
+        return;
+    }
 
-            // If any GameObject instances are found
-            if (getAllGameObjects) {
-                // Iterate through each GameObject instance
-                for (int i = 0; i < getAllGameObjects->max_length; i++) {
-                    Object_1* currentGameObject = getAllGameObjects->vector[i];
+    // Print the count of GameObject instances
+    std::cout << "GameObject count: " << allGameObjects->max_length << "\n";
 
-                    // If the GameObject is active in the hierarchy
-                    if (GameObject_get_activeInHierarchy(reinterpret_cast<GameObject*>(currentGameObject), nullptr)) {
-                        // Print the name of the active GameObject
-                        std::cout << "GameObject Name: " << il2cppi_to_string(Object_1_GetName(currentGameObject, nullptr)) << "\n";
-                    }
-                }
-            }
+    // Iterate through each GameObject instance
+    for (int i = 0; i < allGameObjects->max_length; i++) {
+        Object_1* currentGameObject = allGameObjects->vector[i];
+        if (!currentGameObject) {
+            continue; // Skip null objects
+        }
+
+        // Check if the GameObject is active in the hierarchy
+        GameObject* gameObject = reinterpret_cast<GameObject*>(currentGameObject);
+        if (gameObject && GameObject_get_activeInHierarchy(gameObject, nullptr)) {
+            // Print the name of the active GameObject
+            std::cout << "GameObject Name: " 
+                      << il2cppi_to_string(Object_1_GetName(currentGameObject, nullptr)) 
+                      << "\n";
         }
     }
 }
@@ -384,38 +391,62 @@ _helper->GetMethodInfo(_AssemblyCSharp, "SetFOV", 1, "NolanBehaviour", "");
 
 ```cpp
 if (GetAsyncKeyState(VK_F1) & 0x8000) {
-	const Il2CppImage* _AssemblyCSharp = _helper->GetImage("Assembly-CSharp.dll");
-	_helper->GetMethodInfo(_AssemblyCSharp, "SetRank", 1, "NolanRankController", "");
+    const Il2CppImage* assemblyCSharp = _helper->GetImage("Assembly-CSharp.dll");
+    if (!assemblyCSharp) {
+        std::cout << "Failed to get Assembly-CSharp.dll image.\n";
+        return;
+    }
+
+    _helper->GetMethodInfo(assemblyCSharp, "SetRank", 1, "NolanRankController", "");
 }
 
 if (GetAsyncKeyState(VK_F2) & 0x8000) {
-	const Il2CppImage* _csharp = _helper->GetImage("Assembly-CSharp.dll");
-	if (_csharp == nullptr) return;
+    const Il2CppImage* csharpImage = _helper->GetImage("Assembly-CSharp.dll");
+    if (!csharpImage) {
+        std::cout << "Failed to get Assembly-CSharp.dll image.\n";
+        return;
+    }
 
-	Il2CppObject* nolanObj = _helper->GetTypeFromClass(_csharp, "", "NolanRankController");
+    // Get the NolanRankController type
+    Il2CppObject* nolanObj = _helper->GetTypeFromClass(csharpImage, "", "NolanRankController");
+    if (!nolanObj) {
+        std::cout << "Failed to get NolanRankController type.\n";
+        return;
+    }
 
-	Type* TNolan = reinterpret_cast<Type*>(nolanObj);
-	
-	auto isTypeValid = Object_1_FindObjectOfType(TNolan, nullptr);
+    Type* TNolan = reinterpret_cast<Type*>(nolanObj);
+    auto isTypeValid = Object_1_FindObjectOfType(TNolan, nullptr);
+    if (!isTypeValid) {
+        std::cout << "NolanRankController instance not found.\n";
+        return;
+    }
 
-	if(isTypeValid){
-	
-		NolanBehaviour* _nb_ = reinterpret_cast<NolanBehaviour*>(isTypeValid);
+    // Cast to NolanBehaviour
+    NolanBehaviour* nolanBehaviour = reinterpret_cast<NolanBehaviour*>(isTypeValid);
+    if (!nolanBehaviour) {
+        std::cout << "Failed to cast to NolanBehaviour.\n";
+        return;
+    }
 
-		if (_nb_) {
-			Il2CppClass* _nbClass = il2cpp_class_from_name(_csharp, "", "NolanRankController");
-			if (_nbClass == nullptr) return;
+    // Get class information
+    Il2CppClass* nolanClass = il2cpp_class_from_name(csharpImage, "", "NolanRankController");
+    if (!nolanClass) {
+        std::cout << "Failed to retrieve NolanRankController class.\n";
+        return;
+    }
 
-			const MethodInfo* methodInfo = il2cpp_class_get_method_from_name(_nbClass, "SetRank", 1);
+    // Get method information
+    const MethodInfo* methodInfo = il2cpp_class_get_method_from_name(nolanClass, "SetRank", 1);
+    if (!methodInfo) {
+        std::cout << "Failed to get SetRank method.\n";
+        return;
+    }
 
-			int newRankvalue = 666;
+    int newRankValue = 666;
+    void* params[] = { &newRankValue };
 
-			void* params[] = { &newRankvalue };
-
-			std::cout << "call function..\n";
-			il2cpp_runtime_invoke(methodInfo, _nb_, params, nullptr);
-		}
-	}
+    std::cout << "Calling SetRank function...\n";
+    il2cpp_runtime_invoke(methodInfo, nolanBehaviour, params, nullptr);
 }
 ```
 
@@ -519,46 +550,57 @@ if (_assemblyCSHARP) {
 
 ```cpp
 if (GetAsyncKeyState(VK_F1) & 0x8000) {
-	// Get the Il2CppImage for "Assembly-CSharp.dll"
-	const Il2CppImage* _AssemblyCSharp = _helper->GetImage("Assembly-CSharp.dll");
+    // Get the Il2CppImage for "Assembly-CSharp.dll"
+    const Il2CppImage* assemblyCSharp = _helper->GetImage("Assembly-CSharp.dll");
+    if (!assemblyCSharp) {
+        std::cout << "Failed to get Assembly-CSharp.dll image.\n";
+        return;
+    }
 
-	// Get the object for the "Menu" class within the "Horror" namespace
-	Il2CppObject* _horrorMenuClassObject = _helper->GetTypeFromClass(_AssemblyCSharp, "Horror", "Menu");
+    // Get the object for the "Menu" class within the "Horror" namespace
+    Il2CppObject* horrorMenuClassObject = _helper->GetTypeFromClass(assemblyCSharp, "Horror", "Menu");
+    if (!horrorMenuClassObject) {
+        std::cout << "Failed to get Horror::Menu class.\n";
+        return;
+    }
 
-	// Check if the object exists
-	if (_horrorMenuClassObject) {
+    // Find the object instance of the "Menu" class
+    auto menuType = app::Object_1_FindObjectOfType_1(reinterpret_cast<Type*>(horrorMenuClassObject), true, nullptr);
+    if (!menuType) {
+        std::cout << "Failed to find an instance of Horror::Menu.\n";
+        return;
+    }
 
-		// Find the object represented by _horrorMenuClassObject in the app
-		auto menuType = app::Object_1_FindObjectOfType_1(reinterpret_cast<Type*>(_horrorMenuClassObject), true, nullptr);
+    // Get the Il2CppClass for the "Menu" class
+    Il2CppClass* menuClass = il2cpp_class_from_name(assemblyCSharp, "Horror", "Menu");
+    if (!menuClass) {
+        std::cout << "Failed to get Il2CppClass for Horror::Menu.\n";
+        return;
+    }
 
-		// Check if the object was found
-		if (menuType) {
+    // Get the FieldInfo for the "steamName" field
+    FieldInfo* steamNameField = il2cpp_class_get_field_from_name(menuClass, "steamName");
+    if (!steamNameField) {
+        std::cout << "Field 'steamName' does not exist in Horror::Menu.\n";
+        return;
+    }
 
-			// Get the Il2CppClass for the "Menu" class
-			Il2CppClass* menuClass = il2cpp_class_from_name(_AssemblyCSharp, "Horror", "Menu");
-			if (menuClass == nullptr) return;
+    std::cout << "Field 'steamName' exists!\n";
 
-			// Get the FieldInfo for the "steamName" field
-			FieldInfo* steamNameField = il2cpp_class_get_field_from_name(menuClass, "steamName");
+    // Define a new value for the field
+    const char* newSteamNameValue = "il2cpp-field";
 
-			// Check if the field exists
-			if (steamNameField) {
-				std::cout << "field is exists!!\n";
+    // Create a new Il2CppString from the new value
+    Il2CppString* newSteamNameString = il2cpp_string_new(newSteamNameValue);
+    if (!newSteamNameString) {
+        std::cout << "Failed to create Il2CppString for new steam name.\n";
+        return;
+    }
 
-				// Define a new value for the field
-				const char* newSteamNameValue = "il2cpp-field";
+    // Set the field's value to the new value
+    il2cpp_field_set_value(menuType, steamNameField, newSteamNameString);
 
-				// Create a new Il2CppString from the new value
-				Il2CppString* newSteamNameString = il2cpp_string_new(newSteamNameValue);
-
-				// Set the field's value to the new value
-				il2cpp_field_set_value(_horrorMenuClassObject, steamNameField, newSteamNameString);
-			}
-			else {
-				std::cout << "field is not exists!\n";
-			}
-		}
-	}
+    std::cout << "Successfully updated 'steamName' field!\n";
 }
 ```
 
@@ -586,42 +628,42 @@ T* FindObjectOfType(const char* className, const char* classNamespace = "", cons
     // Getting the IL2CPP domain - the domain represents the runtime environment where all objects are loaded
     Il2CppDomain* domain = il2cpp_domain_get();
     if (!domain) {
-        std::cerr << "Error: Failed to get IL2CPP domain!" << std::endl;
+        std::cout << "Error: Failed to get IL2CPP domain!" << std::endl;
         return nullptr;
     }
 
     // Loading the assembly - loading the specific assembly (like Assembly-CSharp.dll) in which the class is defined
     const Il2CppAssembly* assembly = il2cpp_domain_assembly_open(domain, assemblyName);
     if (!assembly) {
-        std::cerr << "Error: Failed to load assembly (" << assemblyName << ")" << std::endl;
+        std::cout << "Error: Failed to load assembly (" << assemblyName << ")" << std::endl;
         return nullptr;
     }
 
     // Loading the class by name - locating the class inside the assembly using classNamespace and className
     Il2CppClass* klass = il2cpp_class_from_name(assembly->image, classNamespace, className);
     if (!klass) {
-        std::cerr << "Error: Class not found (" << classNamespace << "::" << className << ")" << std::endl;
+        std::cout << "Error: Class not found (" << classNamespace << "::" << className << ")" << std::endl;
         return nullptr;
     }
 
     // Getting the class type - retrieving the type information of the class (Il2CppType)
     const Il2CppType* type = il2cpp_class_get_type(klass);
     if (!type) {
-        std::cerr << "Error: Failed to get class type (" << className << ")" << std::endl;
+        std::cout << "Error: Failed to get class type (" << className << ")" << std::endl;
         return nullptr;
     }
 
     // Getting the type object - using the class type to get the corresponding type object in Unity
     Il2CppObject* typeObject = il2cpp_type_get_object(type);
     if (!typeObject) {
-        std::cerr << "Error: Failed to get type object!" << std::endl;
+        std::cout << "Error: Failed to get type object!" << std::endl;
         return nullptr;
     }
 
     // Calling Unity's FindObjectOfType method - this function finds the first object of the given type in the scene
     app::Object_1* foundObject = app::Object_1_FindObjectOfType(reinterpret_cast<app::Type*>(typeObject), nullptr);
     if (!foundObject) {
-        std::cerr << "Warning: Object not found (" << className << ")" << std::endl;
+        std::cout << "Warning: Object not found (" << className << ")" << std::endl;
         return nullptr;
     }
 
@@ -660,14 +702,14 @@ T* FindObjectOfType(const char* className, const char* classNamespace = "", cons
     // Getting the IL2CPP domain - the domain represents the runtime environment where all objects are loaded
     Il2CppDomain* domain = il2cpp_domain_get();
     if (!domain) {
-        std::cerr << "Error: Failed to get IL2CPP domain!" << std::endl;
+        std::cout << "Error: Failed to get IL2CPP domain!" << std::endl;
         return nullptr;
     }
 
     // Loading the assembly - loading the specific assembly (like Assembly-CSharp.dll) in which the class is defined
     const Il2CppAssembly* assembly = il2cpp_domain_assembly_open(domain, assemblyName);
     if (!assembly) {
-        std::cerr << "Error: Failed to load assembly (" << assemblyName << ")" << std::endl;
+        std::cout << "Error: Failed to load assembly (" << assemblyName << ")" << std::endl;
         return nullptr;
     }
 
@@ -688,7 +730,7 @@ T* FindObjectOfType(const char* className, const char* classNamespace = "", cons
     // Getting the type object - using the class type to get the corresponding type object in Unity
     Il2CppObject* typeObject = il2cpp_type_get_object(type);
     if (!typeObject) {
-        std::cerr << "Error: Failed to get type object!" << std::endl;
+        std::cout << "Error: Failed to get type object!" << std::endl;
         return nullptr;
     }
 
