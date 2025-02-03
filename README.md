@@ -8,7 +8,7 @@
 <p>Hello! I have decided to share some useful examples regarding the usage of Il2cppInspector C++ scaffold. In this guide, I will provide examples of how to interact with defined Il2cpp API functions.</p>
 
 ### Installation
-You can get the latest version of Il2CppInspector 2023.1 [here](https://github.com/jadis0x/il2cpp-reverse-engineering-guide/releases/tag/2023.1).
+You can get the latest version of Il2CppInspectorPro 2025.2 [here](https://github.com/jadis0x/Il2CppInspectorPro/releases/tag/2025.2).
 
 ### Requirements
 Having knowledge of C++ and C# is essential. You should also be familiar with the basics of the Unity game engine.
