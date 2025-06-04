@@ -3,33 +3,47 @@
 [![GitHub contributors](https://img.shields.io/github/contributors/jadis0x/il2cpp-reverse-engineering-guide.svg)](https://github.com/jadis0x/il2cpp-reverse-engineering-guide/graphs/contributors)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-<h3 align="center">Il2cppInspector: C++ Scaffold Guide</h3>
+<h1 align="center">Il2CppInspector: C++ Scaffold Guide</h3>
 
-<p>Hello! I have decided to share some useful examples regarding the usage of Il2cppInspector C++ scaffold. In this guide, I will provide examples of how to interact with defined Il2cpp API functions.</p>
+<p>
+This guide shares practical examples on how to work with the Il2CppInspector C++ scaffold, including how to interact with IL2CPP API functions effectively. to reverse engineer Unity IL2CPP games. It includes concrete examples and helper utilities to speed up your workflow
+</p>
 
-### Installation
-You can get the latest version of Il2CppInspectorPro 2025.2 [here](https://github.com/jadis0x/Il2CppInspectorPro/releases/tag/2025.2).
+#### **Legal Notice**
+This project is provided for educational purposes only. Ensure you comply with the license agreements and terms of service of any software you analyze.
 
-### Requirements
+#### Installation
+You can get the latest version of Il2CppInspectorPro 2025.6 [here](https://github.com/jadis0x/Il2CppInspectorPro/releases).
+
+#### Requirements
 Having knowledge of C++ and C# is essential. You should also be familiar with the basics of the Unity game engine.
 
 > [!NOTE]  
 > I wrote my own helper class. You can access it under the lib folder. Throughout the guide, I will be using the helper functions I created.
-  
-## Video
+
+
+
+
+#### Getting Started
+This repository demonstrates how to work with IL2CPP-compiled Unity games. The guide assumes you have already generated a C++ scaffold using **Il2CppInspector**.
+
+#### Prerequisites
+- Windows with **Visual Studio 2019** or newer installed
+- **Il2CppInspectorPro** (see the Installation section above)
+- Basic knowledge of C++/C# and the Unity game engine
+- A local copy of the target Unity game
+
+
+#### Video
 [![Video](https://img.youtube.com/vi/L7s2ttcNEh0/0.jpg)](https://www.youtube.com/watch?v=L7s2ttcNEh0)
 
-## Contact
+#### Contact
 If you have any questions, feel free to reach out to me.</br>
 
 Discord: Jadis0x </br>
 Steam: Jadis0x
 
-## Examples
-> [!TIP]
-> You can find more detailed examples by taking a look at [HERE](https://github.com/ALittlePatate/DevourClient) using the Il2cppInspector analysis tool I used to create the cheat.
-
-## Contents
+#### Navigation
 
 <nav>
   <ul>
@@ -48,7 +62,10 @@ Steam: Jadis0x
 
 <h2 id="get_assemblies">Get the assemblies</h2>
 
-<span>This code snippet demonstrates how to retrieve a list of all assemblies within the active domain using il2cpp API functions.</span>
+<span>
+This code snippet retrieves a raw list of all assemblies loaded in the active domain using the IL2CPP API. The il2cpp_domain_get_assemblies function serves a purpose similar to AppDomain.CurrentDomain.GetAssemblies() in managed C#, but it operates at a lower level and provides direct access to Il2CppAssembly structures.
+</span>
+<br>
 
 ```cpp
 // Get the active domain
